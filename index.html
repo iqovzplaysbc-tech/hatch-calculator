@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Secret Pet Hatch Calculator</title>
+<title>Secret Pet Hatch Calculator - Advanced</title>
 <style>
   body {
     margin: 0;
@@ -11,8 +11,8 @@
     color: #eaeaea;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    padding-top: 30px;
   }
   .box {
     background: #1c1c26;
@@ -20,13 +20,17 @@
     border-radius: 10px;
     width: 400px;
   }
-  input, button {
+  input {
     width: 100%;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 8px;
+    margin: 6px 0;
     font-size: 16px;
   }
   button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
     cursor: pointer;
   }
   pre {
@@ -39,73 +43,86 @@
 
 <div class="box">
   <h2>Secret Pet Hatch Calculator</h2>
-  <input id="input" placeholder="Example: 1/25k 18.2 7">
+  <input id="baseRarity" placeholder="Base Rarity (0.0002%, 1/25k, 25k, etc.)">
+  <input id="yourLuck" placeholder="Your Luck (potions/boosts)">
+  <input id="eventLuck" placeholder="Event Luck (optional, default 1)" value="1">
+  <input id="adminLuck" placeholder="Admin Abuse Luck (optional, default 1)" value="1">
+  <input id="eggsBatch" placeholder="Eggs per Batch">
+  <input id="hatchSpeed" placeholder="Hatch Speed (s per batch, default 2.57)" value="2.57">
+  <input id="hatchEvent" placeholder="Hatch Speed Event Multiplier (optional, default 1)" value="1">
   <button id="calcBtn">Calculate</button>
   <pre id="output"></pre>
 </div>
 
 <script>
 function parseRarity(input) {
-  input = input.toLowerCase().replace(/,/g, "").trim();
+  input = input.toLowerCase().replace(/,/g,"").trim();
 
-  // Fraction format (1/25000 or 1/25k)
-  if (input.includes("/")) {
+  // Handle percentages
+  if(input.endsWith("%")) {
+    let val = Number(input.replace("%",""))/100;
+    return Math.round(1/val);
+  }
+
+  // Fraction format
+  if(input.includes("/")) {
     let parts = input.split("/");
     let denom = parts[1];
-    if (denom.endsWith("k")) denom = Number(denom.replace("k",""))*1000;
+    if(denom.endsWith("k")) denom = Number(denom.replace("k",""))*1000;
     return Number(denom);
   }
 
-  // Decimal probability (0 < input < 1)
+  // Decimal <1
   let val = Number(input);
-  if(val > 0 && val < 1) {
-    return Math.round(1 / val);
-  }
+  if(val>0 && val<1) return Math.round(1/val);
 
-  // k format (25k)
-  if (input.endsWith("k")) return Number(input.replace("k",""))*1000;
+  // k format
+  if(input.endsWith("k")) return Number(input.replace("k",""))*1000;
 
-  // Plain number (already base rarity)
+  // Plain number
   return Number(input);
 }
 
 document.getElementById("calcBtn").addEventListener("click", function() {
-  const parts = document.getElementById("input").value.trim().split(" ");
-  if(parts.length !== 3){
-    document.getElementById("output").textContent = "Enter exactly: rarity luck eggs";
+  const base = parseRarity(document.getElementById("baseRarity").value);
+  const yourLuck = Number(document.getElementById("yourLuck").value) || 1;
+  const eventLuck = Number(document.getElementById("eventLuck").value) || 1;
+  const adminLuck = Number(document.getElementById("adminLuck").value) || 1;
+  const eggsBatch = Number(document.getElementById("eggsBatch").value);
+  const hatchSpeed = Number(document.getElementById("hatchSpeed").value) || 2.57;
+  const hatchEvent = Number(document.getElementById("hatchEvent").value) || 1;
+
+  if(!base || !eggsBatch || eggsBatch <=0){
+    document.getElementById("output").textContent="Please enter valid Base Rarity and Eggs per Batch.";
     return;
   }
 
-  const base = parseRarity(parts[0]);
-  const luck = Number(parts[1]);
-  const eggs = Number(parts[2]);
+  const totalLuck = yourLuck * eventLuck * adminLuck;
+  const odds = base / totalLuck;
+  const totalBatches = odds / eggsBatch;
+  const adjustedHatchTime = hatchSpeed / hatchEvent;
+  const totalTimeSec = totalBatches * adjustedHatchTime;
 
-  if(!base || base <= 0 || !luck || luck <= 0 || !eggs || eggs <= 0){
-    document.getElementById("output").textContent = "All numbers must be greater than 0";
-    return;
-  }
-
-  const odds = base / luck;
-  const batches = odds / eggs;
-  const seconds = batches * 2.78;
-
-  let time;
-  if(seconds < 60) time = `${seconds.toFixed(2)} seconds`;
-  else if(seconds < 3600) time = `${(seconds/60).toFixed(2)} minutes`;
-  else if(seconds < 86400) time = `${(seconds/3600).toFixed(2)} hours`;
-  else time = `${(seconds/86400).toFixed(2)} days`;
+  let displayTime;
+  if(totalTimeSec < 60) displayTime = totalTimeSec.toFixed(2) + " seconds";
+  else if(totalTimeSec < 3600) displayTime = (totalTimeSec/60).toFixed(2) + " minutes";
+  else if(totalTimeSec < 86400) displayTime = (totalTimeSec/3600).toFixed(2) + " hours";
+  else displayTime = (totalTimeSec/86400).toFixed(2) + " days";
 
   document.getElementById("output").textContent =
-`Chances: 1/${Math.round(odds).toLocaleString()}
-Time to Hatch: ~${time}
+`Total Luck: ${totalLuck.toLocaleString()}x
+Chances per Egg: 1/${Math.round(odds).toLocaleString()}
+Total Batches Needed: ${Math.round(totalBatches).toLocaleString()}
+Adjusted Hatch Time per Batch: ${adjustedHatchTime.toFixed(2)} seconds
+Time to Hatch: ~${displayTime}
 
-How this was calculated (brief):
-
-• Base rarity → 1/${base.toLocaleString()}
-• Luck ${luck}x → ${base.toLocaleString()} ÷ ${luck}
-• ${eggs} eggs per batch
-• 2.78 seconds per batch
-• Expected batches ≈ ${Math.round(batches).toLocaleString()}
+Breakdown:
+• Base Rarity → 1/${base.toLocaleString()}
+• Your Luck → ${yourLuck}x
+• Event Luck → ${eventLuck}x
+• Admin Abuse Luck → ${adminLuck}x
+• Eggs per Batch → ${eggsBatch}
+• Hatch Speed → ${hatchSpeed} s/batch ÷ ${hatchEvent} event multiplier
 `;
 });
 </script>
