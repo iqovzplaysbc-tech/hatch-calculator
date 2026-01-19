@@ -49,6 +49,36 @@
     padding: 10px;
     border-radius: 5px;
   }
+
+  /* Tooltip CSS */
+  .info {
+    position: relative;
+    cursor: pointer;
+    color: #00aaff;
+    margin-left: 4px;
+    font-weight: bold;
+  }
+  .tooltip {
+    visibility: hidden;
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -125px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+  }
+  .info:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
@@ -58,11 +88,20 @@
 
   <div class="input-group">
     <label for="baseRarity">Base Rarity</label>
-    <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, etc.">
+    <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, 1/25m, 25m, etc.">
   </div>
 
   <div class="input-group">
-    <label for="yourLuck">Your Luck</label>
+    <label for="yourLuck">
+      Your Luck 
+      <span class="info">ℹ
+        <span class="tooltip">
+          Add all of your potion multipliers, purchasable luck around the map together to get your final luck.
+          Example: 1.5x + 2x + 3x + 4x + 5x + 2x + 4x.
+          If it says 10%, that's 0.1x. Add those together too.
+        </span>
+      </span>
+    </label>
     <input id="yourLuck" placeholder="Your in-game luck multipliers">
   </div>
 
@@ -99,22 +138,29 @@
 function parseRarity(input) {
   input = input.toLowerCase().replace(/,/g,"").trim();
 
+  // Percentages
   if(input.endsWith("%")) {
     let val = Number(input.replace("%",""))/100;
     return Math.round(1/val);
   }
 
+  // Fraction format 1/25k, 1/25m, etc.
   if(input.includes("/")) {
     let parts = input.split("/");
     let denom = parts[1];
+
     if(denom.endsWith("k")) denom = Number(denom.replace("k",""))*1000;
+    else if(denom.endsWith("m")) denom = Number(denom.replace("m",""))*1000000;
     return Number(denom);
   }
 
+  // Decimal <1
   let val = Number(input);
   if(val>0 && val<1) return Math.round(1/val);
 
+  // Plain numbers with k/m
   if(input.endsWith("k")) return Number(input.replace("k",""))*1000;
+  if(input.endsWith("m")) return Number(input.replace("m",""))*1000000;
 
   return Number(input);
 }
