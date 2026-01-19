@@ -18,7 +18,7 @@
     background: #1c1c26;
     padding: 25px;
     border-radius: 12px;
-    width: 500px;
+    width: 520px;
     max-width: 100%;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
   }
@@ -79,8 +79,14 @@
     background: linear-gradient(90deg, #00ccff, #004c99);
   }
 
+  .output-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
   pre {
-    margin-top: 15px;
+    margin-top: 10px;
     white-space: pre-wrap;
     font-size: 14px;
     background: #0f0f14;
@@ -100,7 +106,7 @@
 
   .tooltip {
     visibility: hidden;
-    width: 260px;
+    width: 280px;
     background-color: #333;
     color: #fff;
     text-align: left;
@@ -110,7 +116,7 @@
     z-index: 1;
     bottom: 125%;
     left: 50%;
-    margin-left: -130px;
+    margin-left: -140px;
     opacity: 0;
     transition: opacity 0.3s;
     font-size: 12px;
@@ -126,6 +132,18 @@
       grid-template-columns: 1fr;
     }
   }
+
+  .signature {
+    text-align:center; font-size:12px; margin-top:10px; color:#888;
+  }
+
+  .feedback {
+    text-align:center; margin-top:5px;
+  }
+
+  .feedback a {
+    color:#00aaff; text-decoration:none; font-size:13px;
+  }
 </style>
 </head>
 <body>
@@ -136,18 +154,20 @@
   <div class="inputs">
 
     <div class="input-group">
-      <label for="baseRarity">Base Rarity</label>
+      <label for="baseRarity">Base Rarity 🐣</label>
       <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, 1/25m, 25m">
     </div>
 
     <div class="input-group">
       <label for="yourLuck">
-        Your Luck 
+        Your Luck 🍀
         <span class="info">ℹ
           <span class="tooltip">
-            Add all of your potion multipliers and purchasable luck together for final luck.
-            Example: 1.5x + 2x + 3x + 4x + 5x.
-            If it says 10%, that's 0.1x. Don't multiply by Gamepass luck; add that too. Don't include event luck in your luck multipliers.
+            🔹 To get your current luck, hover over every potion you have on and add all of them together.  
+            🔹 Also add every gamepass to your luck.  
+            🔹 Don’t forget purchasable luck around the map.  
+            🔹 10% = 0.1x. Do <b>not</b> multiply them.  
+            🔹 Example: (1.5x + 2x + 3x + 4x + 2x + 4x + 1.3x = 22.8)
           </span>
         </span>
       </label>
@@ -155,11 +175,10 @@
     </div>
 
     <div class="input-group">
-      <label for="eventLuck">
-        Event Luck 
+      <label for="eventLuck">Event Luck 🎉
         <span class="info">ℹ
           <span class="tooltip">
-            Add only event multipliers from active events. This is separate from Your Luck.
+            Only include active event multipliers here. Separate from Your Luck.
           </span>
         </span>
       </label>
@@ -167,11 +186,10 @@
     </div>
 
     <div class="input-group">
-      <label for="adminLuck">
-        Admin Abuse Luck 
+      <label for="adminLuck">Admin Abuse Luck 🛠️
         <span class="info">ℹ
           <span class="tooltip">
-            Only for admin/spawned eggs. Can be very high. Leave as 1 if not applicable.
+            Only for admin/spawned eggs. Leave 1 if not applicable.
           </span>
         </span>
       </label>
@@ -179,16 +197,15 @@
     </div>
 
     <div class="input-group">
-      <label for="eggsBatch">Eggs per Batch</label>
+      <label for="eggsBatch">Eggs per Batch 🐣</label>
       <input id="eggsBatch" placeholder="Number of eggs hatched at once">
     </div>
 
     <div class="input-group">
-      <label for="hatchSpeed">
-        Hatch Speed (s per batch)
+      <label for="hatchSpeed">Hatch Speed ⏱️
         <span class="info">ℹ
           <span class="tooltip">
-            Base hatch time. Default is 2.57 seconds per batch.
+            Base hatch time per batch. Default 2.57 seconds.
           </span>
         </span>
       </label>
@@ -196,8 +213,7 @@
     </div>
 
     <div class="input-group">
-      <label for="hatchEvent">
-        Hatch Speed Event Multiplier
+      <label for="hatchEvent">Hatch Speed Event Multiplier ⏱️
         <span class="info">ℹ
           <span class="tooltip">
             Multiply hatch speed reduction from events. Example: 2x makes batches hatch twice as fast.
@@ -210,7 +226,18 @@
   </div>
 
   <button id="calcBtn">Calculate</button>
+
+  <div class="output-buttons">
+    <button id="copyBtn">📋 Copy Output</button>
+  </div>
+
   <pre id="output"></pre>
+
+  <div class="feedback">
+    <a href="https://forms.gle/YOUR_GOOGLE_FORM_LINK" target="_blank">💬 Feedback</a>
+  </div>
+
+  <div class="signature">By: iQovz</div>
 </div>
 
 <script>
@@ -276,6 +303,14 @@ Chances: 1/${Math.round(odds).toLocaleString()}
 Time to Hatch: ~${displayTime}
 Adjusted Hatch Time per Batch: ${adjustedHatchTime.toFixed(2)} seconds
 Total Hatches needed: ${Math.round(totalBatches).toLocaleString()}`;
+});
+
+// Copy button
+document.getElementById("copyBtn").addEventListener("click", function() {
+  const output = document.getElementById("output").textContent;
+  navigator.clipboard.writeText(output).then(() => {
+    alert("Output copied to clipboard!");
+  });
 });
 </script>
 
