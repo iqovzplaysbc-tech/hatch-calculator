@@ -4,36 +4,28 @@
 <meta charset="UTF-8">
 <title>Secret Pet Hatch Calculator - Full Version</title>
 <style>
-body {
-  margin:0; font-family:Arial,sans-serif; background:#0f0f14; color:#eaeaea; display:flex; justify-content:center; padding:20px;
-}
-.container {
-  width: 100%; max-width: 700px;
-}
-.tabs {
-  display:flex; justify-content:space-around; margin-bottom:15px;
-}
-.tab {
-  cursor:pointer; padding:10px 15px; border-radius:8px; background:#1c1c26; transition:0.2s;
-}
-.tab.active { background:#00aaff; font-weight:bold; color:#fff;}
-.section { display:none; background:#1c1c26; padding:20px; border-radius:12px; }
-.section.active { display:block; }
-.inputs { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-bottom:15px;}
-.input-group { display:flex; flex-direction:column;}
-.input-group label { font-size:13px; margin-bottom:3px; }
-.input-group input[type=number], .input-group input[type=text], select { padding:6px; font-size:14px; border-radius:5px; border:1px solid #333; background:#0f0f14; color:#eaeaea;}
-.input-group input:focus { background:#1a1a28; outline:none;}
-button { padding:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(90deg,#00aaff,#0066cc); color:#fff; font-weight:bold; transition:0.2s; margin-top:5px;}
-button:hover { background:linear-gradient(90deg,#00ccff,#004c99);}
-pre { margin-top:10px; white-space:pre-wrap; font-size:14px; background:#0f0f14; padding:10px; border-radius:5px; border:1px solid #333;}
-.info { position:relative; cursor:pointer; color:#00aaff; margin-left:4px; font-weight:bold;}
-.tooltip { visibility:hidden; width:280px; background:#333; color:#fff; text-align:left; border-radius:6px; padding:8px; position:absolute; z-index:1; bottom:125%; left:50%; margin-left:-140px; opacity:0; transition:0.3s; font-size:12px;}
-.info:hover .tooltip { visibility:visible; opacity:1;}
-.signature { text-align:center; font-size:12px; margin-top:10px; color:#888; }
-.feedback { text-align:center; margin-top:5px; }
-.feedback a { color:#00aaff; text-decoration:none; font-size:13px; }
-@media(max-width:600px){ .inputs { grid-template-columns:1fr; } }
+body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;display:flex;justify-content:center;padding:20px;}
+.container {width:100%;max-width:700px;}
+.tabs {display:flex;justify-content:space-around;margin-bottom:15px;}
+.tab {cursor:pointer;padding:10px 15px;border-radius:8px;background:#1c1c26;transition:0.2s;}
+.tab.active {background:#00aaff;font-weight:bold;color:#fff;}
+.section {display:none;background:#1c1c26;padding:20px;border-radius:12px;}
+.section.active {display:block;}
+.inputs {display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:15px;}
+.input-group {display:flex;flex-direction:column;}
+.input-group label {font-size:13px;margin-bottom:3px;}
+.input-group input[type=number], .input-group input[type=text], select {padding:6px;font-size:14px;border-radius:5px;border:1px solid #333;background:#0f0f14;color:#eaeaea;}
+.input-group input:focus {background:#1a1a28;outline:none;}
+button {padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(90deg,#00aaff,#0066cc);color:#fff;font-weight:bold;transition:0.2s;margin-top:5px;}
+button:hover {background:linear-gradient(90deg,#00ccff,#004c99);}
+pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;}
+.info {position:relative;cursor:pointer;color:#00aaff;margin-left:4px;font-weight:bold;}
+.tooltip {visibility:hidden;width:280px;background:#333;color:#fff;text-align:left;border-radius:6px;padding:8px;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-140px;opacity:0;transition:0.3s;font-size:12px;}
+.info:hover .tooltip {visibility:visible;opacity:1;}
+.signature {text-align:center;font-size:12px;margin-top:10px;color:#888;}
+.feedback {text-align:center;margin-top:5px;}
+.feedback a {color:#00aaff;text-decoration:none;font-size:13px;}
+@media(max-width:600px){.inputs{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -97,6 +89,8 @@ pre { margin-top:10px; white-space:pre-wrap; font-size:14px; background:#0f0f14;
           <option value="Mystic">Mystic Egg</option>
           <option value="Crystal">Crystal Egg</option>
           <option value="Blossom">Blossom Egg</option>
+          <option value="Magic">Magic Egg</option>
+          <option value="Fire Ring">Fire Ring Egg</option>
         </select>
       </div>
       <div class="input-group">
@@ -125,6 +119,8 @@ pre { margin-top:10px; white-space:pre-wrap; font-size:14px; background:#0f0f14;
           <option value="Mystic">Mystic Egg</option>
           <option value="Crystal">Crystal Egg</option>
           <option value="Blossom">Blossom Egg</option>
+          <option value="Magic">Magic Egg</option>
+          <option value="Fire Ring">Fire Ring Egg</option>
         </select>
       </div>
       <div class="input-group">
@@ -213,7 +209,14 @@ const eggsData={
   "Glacier":[{name:"Yeti",chance:52.63},{name:"Frost Dragon",chance:1000}],
   "Mystic":[{name:"Taurus",chance:52.63},{name:"Goblin",chance:1000},{name:"Mystic Hexo",chance:100000}],
   "Crystal":[{name:"Dominus",chance:1000},{name:"Flying Gem",chance:100000}],
-  "Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}]
+  "Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}],
+  "Magic":[{name:"Clown",chance:25000}],
+  "Fire Ring":[
+    {name:"Festival Bunny",chance:100},
+    {name:"Festival Dragon",chance:1000},
+    {name:"Fire Ring Lion",chance:100000},
+    {name:"Ultra Dice",chance:500000}
+  ]
 };
 
 // MULTI-EGG CALCULATOR
