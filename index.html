@@ -2,93 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hatch Calculator</title>
-
+<title>Secret Pet Hatch Calculator</title>
 <style>
-body {
-  background: #0f141a;
-  color: #eaeaea;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-}
-
-.box {
-  max-width: 800px;
-  margin: auto;
-}
-
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-}
-
-button {
-  cursor: pointer;
-}
-
-pre {
-  margin-top: 20px;
-  white-space: pre-wrap;
-}
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f0f14;
+    color: #eaeaea;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .box {
+    background: #1c1c26;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+  }
+  input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  button {
+    cursor: pointer;
+  }
+  pre {
+    margin-top: 15px;
+    white-space: pre-wrap;
+  }
 </style>
 </head>
-
 <body>
+
 <div class="box">
-<input id="input" placeholder="Example: 1/25k 18.2 7" onkeydown="if(event.key==='Enter') calculate()">
-<button onclick="calculate()">Calculate</button>
+  <h2>Secret Pet Hatch Calculator</h2>
+  <input id="input" placeholder="Example: 1/25k 18.2 7">
+  <button id="calcBtn">Calculate</button>
   <pre id="output"></pre>
 </div>
 
 <script>
-function parseRarity(text) {
-  text = text.toLowerCase().trim().replace(/,/g, "");
+function parseRarity(input) {
+  input = input.toLowerCase().replace(/,/g, "").trim();
 
-  if (text.includes("/")) {
-    let parts = text.split("/");
-    let num = Number(parts[0]);
-    let den = parts[1].replace("k", "000");
-
-    return Number(den) / num;
+  // fraction format (1/25000 or 1/25k)
+  if (input.includes("/")) {
+    let parts = input.split("/");
+    let denom = parts[1];
+    if (denom.endsWith("k")) denom = Number(denom.replace("k",""))*1000;
+    return Number(denom);
   }
 
-  let value = Number(text);
-  if (value > 1) {
-    return value;
-  }
+  // decimal probability (0.00004)
+  let val = Number(input);
+  if (val > 0 && val < 1) return Math.round(1 / val);
 
-  if (value > 0 && value < 1) {
-    return 1 / value;
-  }
+  // k format (25k)
+  if (input.endsWith("k")) return Number(input.replace("k",""))*1000;
 
-  return NaN;
-}
-  text = text.toLowerCase().trim();
-
-  if (text.includes("/")) {
-    let parts = text.split("/");
-    let num = Number(parts[0]);
-    let den = parts[1].replace("k", "000");
-
-    return Number(den) / num;
-  }
-
-  let value = Number(text);
-  if (value > 0 && value < 1) {
-    return 1 / value;
-  }
-
-  return NaN;
+  // plain number
+  return Number(input);
 }
 
-function calculate() {
+document.getElementById("calcBtn").addEventListener("click", function() {
   const parts = document.getElementById("input").value.trim().split(" ");
-  if (parts.length !== 3) {
-    document.getElementById("output").textContent =
-      "Enter exactly: rarity luck eggs\nExample: 1/25k 18.2 7";
+  if(parts.length !== 3){
+    document.getElementById("output").textContent = "Enter exactly: rarity luck eggs";
     return;
   }
 
@@ -96,9 +78,8 @@ function calculate() {
   const luck = Number(parts[1]);
   const eggs = Number(parts[2]);
 
-  if (!base || !luck || !eggs) {
-    document.getElementById("output").textContent =
-      "Invalid numbers. Check your input.";
+  if(!base || base <= 0 || !luck || luck <= 0 || !eggs || eggs <= 0){
+    document.getElementById("output").textContent = "All numbers must be greater than 0";
     return;
   }
 
@@ -107,24 +88,25 @@ function calculate() {
   const seconds = batches * 2.78;
 
   let time;
-  if (seconds < 60) time = seconds.toFixed(2) + " seconds";
-  else if (seconds < 3600) time = (seconds / 60).toFixed(2) + " minutes";
-  else if (seconds < 86400) time = (seconds / 3600).toFixed(2) + " hours";
-  else time = (seconds / 86400).toFixed(2) + " days";
+  if(seconds < 60) time = `${seconds.toFixed(2)} seconds`;
+  else if(seconds < 3600) time = `${(seconds/60).toFixed(2)} minutes`;
+  else if(seconds < 86400) time = `${(seconds/3600).toFixed(2)} hours`;
+  else time = `${(seconds/86400).toFixed(2)} days`;
 
   document.getElementById("output").textContent =
 `Chances: 1/${Math.round(odds).toLocaleString()}
 Time to Hatch: ~${time}
 
-How this was calculated:
-• Base rarity → 1/${Math.round(base).toLocaleString()}
-• Luck → ${luck}x
-• Eggs per batch → ${eggs}
+How this was calculated (brief):
+
+• Base rarity → 1/${base.toLocaleString()}
+• Luck ${luck}x → ${base.toLocaleString()} ÷ ${luck}
+• ${eggs} eggs per batch
 • 2.78 seconds per batch
-• Expected batches → ${Math.round(batches).toLocaleString()}`;
-}
+• Expected batches ≈ ${Math.round(batches).toLocaleString()}
+`;
+});
 </script>
+
 </body>
 </html>
-
-
