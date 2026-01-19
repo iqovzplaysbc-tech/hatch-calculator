@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hatch Calculator</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f0f14;
+    color: #eaeaea;
+  }
+  .box {
+    padding: 20px;
+  }
+  input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  pre {
+    margin-top: 15px;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <input id="input" placeholder="Example: 3 18.2 7">
+  <button onclick="calculate()">Calculate</button>
+  <pre id="output"></pre>
+</div>
+
+<script>
+function calculate() {
+  const parts = document.getElementById("input").value.trim().split(" ");
+  if (parts.length !== 3) {
+    document.getElementById("output").textContent = "Enter exactly: tier luck eggs";
+    return;
+  }
+
+  const tier = Number(parts[0]);
+  const luck = Number(parts[1]);
+  const eggs = Number(parts[2]);
+
+  let base;
+  if (tier === 1) base = 25000;
+  else if (tier === 2) base = 100000;
+  else if (tier === 3) base = 500000;
+  else {
+    document.getElementById("output").textContent = "Tier must be 1, 2, or 3.";
+    return;
+  }
+
+  const odds = base / luck;
+  const batches = odds / eggs;
+  const seconds = batches * 2.78;
+
+  let time;
+  if (seconds < 60) time = `${seconds.toFixed(2)} seconds`;
+  else if (seconds < 3600) time = `${(seconds / 60).toFixed(2)} minutes`;
+  else if (seconds < 86400) time = `${(seconds / 3600).toFixed(2)} hours`;
+  else time = `${(seconds / 86400).toFixed(2)} days`;
+
+  document.getElementById("output").textContent =
+`Chances: 1/${Math.round(odds).toLocaleString()}
+Time to Hatch: ~${time}
+
+How this was calculated (brief):
+
+• Secret tier ${tier} → base 1/${base.toLocaleString()}
+• Luck ${luck}x → ${base.toLocaleString()} ÷ ${luck}
+• ${eggs} eggs per batch
+• 2.78 seconds per batch
+• Expected batches ≈ ${Math.round(batches).toLocaleString()}
+`;
+}
+</script>
+
+</body>
+</html>
