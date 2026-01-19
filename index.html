@@ -3,54 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <title>Hatch Calculator</title>
+
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0f0f14;
-    color: #eaeaea;
-  }
-  .box {
-    padding: 20px;
-  }
-  input, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 16px;
-  }
-  pre {
-    margin-top: 15px;
-    white-space: pre-wrap;
-  }
+body {
+  background: #0f141a;
+  color: #eaeaea;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.box {
+  max-width: 800px;
+  margin: auto;
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+pre {
+  margin-top: 20px;
+  white-space: pre-wrap;
+}
 </style>
 </head>
-<body>
 
+<body>
 <div class="box">
-  <input id="input" placeholder="Example: 3 18.2 7">
+  <input id="input" placeholder="Example: 1/25k 18.2 7">
   <button onclick="calculate()">Calculate</button>
   <pre id="output"></pre>
 </div>
 
 <script>
+function parseRarity(text) {
+  text = text.toLowerCase().trim();
+
+  if (text.includes("/")) {
+    let parts = text.split("/");
+    let num = Number(parts[0]);
+    let den = parts[1].replace("k", "000");
+
+    return Number(den) / num;
+  }
+
+  let value = Number(text);
+  if (value > 0 && value < 1) {
+    return 1 / value;
+  }
+
+  return NaN;
+}
+
 function calculate() {
   const parts = document.getElementById("input").value.trim().split(" ");
   if (parts.length !== 3) {
-    document.getElementById("output").textContent = "Enter exactly: tier luck eggs";
+    document.getElementById("output").textContent =
+      "Enter exactly: rarity luck eggs\nExample: 1/25k 18.2 7";
     return;
   }
 
-  const tier = Number(parts[0]);
+  const base = parseRarity(parts[0]);
   const luck = Number(parts[1]);
   const eggs = Number(parts[2]);
 
-  let base;
-  if (tier === 1) base = 25000;
-  else if (tier === 2) base = 100000;
-  else if (tier === 3) base = 500000;
-  else {
-    document.getElementById("output").textContent = "Tier must be 1, 2, or 3.";
+  if (!base || !luck || !eggs) {
+    document.getElementById("output").textContent =
+      "Invalid numbers. Check your input.";
     return;
   }
 
@@ -59,25 +86,22 @@ function calculate() {
   const seconds = batches * 2.78;
 
   let time;
-  if (seconds < 60) time = `${seconds.toFixed(2)} seconds`;
-  else if (seconds < 3600) time = `${(seconds / 60).toFixed(2)} minutes`;
-  else if (seconds < 86400) time = `${(seconds / 3600).toFixed(2)} hours`;
-  else time = `${(seconds / 86400).toFixed(2)} days`;
+  if (seconds < 60) time = seconds.toFixed(2) + " seconds";
+  else if (seconds < 3600) time = (seconds / 60).toFixed(2) + " minutes";
+  else if (seconds < 86400) time = (seconds / 3600).toFixed(2) + " hours";
+  else time = (seconds / 86400).toFixed(2) + " days";
 
   document.getElementById("output").textContent =
 `Chances: 1/${Math.round(odds).toLocaleString()}
 Time to Hatch: ~${time}
 
-How this was calculated (brief):
-
-• Secret tier ${tier} → base 1/${base.toLocaleString()}
-• Luck ${luck}x → ${base.toLocaleString()} ÷ ${luck}
-• ${eggs} eggs per batch
+How this was calculated:
+• Base rarity → 1/${Math.round(base).toLocaleString()}
+• Luck → ${luck}x
+• Eggs per batch → ${eggs}
 • 2.78 seconds per batch
-• Expected batches ≈ ${Math.round(batches).toLocaleString()}
-`;
+• Expected batches → ${Math.round(batches).toLocaleString()}`;
 }
 </script>
-
 </body>
 </html>
