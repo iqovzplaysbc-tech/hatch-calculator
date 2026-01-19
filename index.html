@@ -1,54 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Secret Pet Hatch Calculator</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0f0f14;
-    color: #eaeaea;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .box {
-    background: #1c1c26;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-  }
-  input, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 16px;
-  }
-  button {
-    cursor: pointer;
-  }
-  pre {
-    margin-top: 15px;
-    white-space: pre-wrap;
-  }
-</style>
-</head>
-<body>
-
-<div class="box">
-  <h2>Secret Pet Hatch Calculator</h2>
-  <input id="input" placeholder="Example: 1/25k 18.2 7">
-  <button id="calcBtn">Calculate</button>
-  <pre id="output"></pre>
-</div>
-
 <script>
 function parseRarity(input) {
   input = input.toLowerCase().replace(/,/g, "").trim();
 
-  // fraction format (1/25000 or 1/25k)
+  // Fraction format (1/25000 or 1/25k)
   if (input.includes("/")) {
     let parts = input.split("/");
     let denom = parts[1];
@@ -56,14 +10,16 @@ function parseRarity(input) {
     return Number(denom);
   }
 
-  // decimal probability (0.00004)
+  // Decimal probability (0 < input < 1)
   let val = Number(input);
-  if (val > 0 && val < 1) return Math.round(1 / val);
+  if(val > 0 && val < 1) {
+    return Math.round(1 / val);
+  }
 
   // k format (25k)
   if (input.endsWith("k")) return Number(input.replace("k",""))*1000;
 
-  // plain number
+  // Plain number (already base rarity)
   return Number(input);
 }
 
@@ -107,6 +63,3 @@ How this was calculated (brief):
 `;
 });
 </script>
-
-</body>
-</html>
