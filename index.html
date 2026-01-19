@@ -38,8 +38,8 @@ pre {
 
 <body>
 <div class="box">
-  <input id="input" placeholder="Example: 1/25k 18.2 7">
-  <button onclick="calculate()">Calculate</button>
+<input id="input" placeholder="Example: 1/25k 18.2 7" onkeydown="if(event.key==='Enter') calculate()">
+<button onclick="calculate()">Calculate</button>
   <pre id="output"></pre>
 </div>
 
@@ -126,4 +126,5 @@ How this was calculated:
 </script>
 </body>
 </html>
+
 
