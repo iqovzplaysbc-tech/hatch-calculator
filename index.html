@@ -163,10 +163,10 @@
         Your Luck 🍀
         <span class="info">ℹ
           <span class="tooltip">
-            🔹 To get your current luck, hover over every potion you have on and add all of them together.  
-            🔹 Also add every gamepass to your luck.  
-            🔹 Don’t forget purchasable luck around the map.  
-            🔹 10% = 0.1x. Do <b>not</b> multiply them.  
+            🔹 To get your current luck, hover over every potion you have on and add all of them together.<br>
+            🔹 Also add every gamepass to your luck.<br>
+            🔹 Don’t forget purchasable luck around the map.<br>
+            🔹 10% = 0.1x. Do <b>not</b> multiply them.<br>
             🔹 Example: (1.5x + 2x + 3x + 4x + 2x + 4x + 1.3x = 22.8)
           </span>
         </span>
@@ -234,7 +234,7 @@
   <pre id="output"></pre>
 
   <div class="feedback">
-    <a href="https://forms.gle/https://forms.gle/W3JbqH4FnwxkobYr9" target="_blank">💬 Feedback</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdPrTZ1_LCVV-7HxXxlKlhCcpgILnNa33Cb-0QCgihAfNmM1A/viewform?usp=header" target="_blank">💬 Feedback</a>
   </div>
 
   <div class="signature">By: iQovz</div>
@@ -244,13 +244,11 @@
 function parseRarity(input) {
   input = input.toLowerCase().replace(/,/g,"").trim();
 
-  // Percentages
   if(input.endsWith("%")) {
     let val = Number(input.replace("%",""))/100;
     return Math.round(1/val);
   }
 
-  // Fraction format 1/25k, 1/25m, etc.
   if(input.includes("/")) {
     let parts = input.split("/");
     let denom = parts[1];
@@ -260,14 +258,10 @@ function parseRarity(input) {
     return Number(denom);
   }
 
-  // Decimal <1
   let val = Number(input);
   if(val>0 && val<1) return Math.round(1/val);
-
-  // Plain numbers with k/m
   if(input.endsWith("k")) return Number(input.replace("k",""))*1000;
   if(input.endsWith("m")) return Number(input.replace("m",""))*1000000;
-
   return Number(input);
 }
 
@@ -305,7 +299,6 @@ Adjusted Hatch Time per Batch: ${adjustedHatchTime.toFixed(2)} seconds
 Total Hatches needed: ${Math.round(totalBatches).toLocaleString()}`;
 });
 
-// Copy button
 document.getElementById("copyBtn").addEventListener("click", function() {
   const output = document.getElementById("output").textContent;
   navigator.clipboard.writeText(output).then(() => {
@@ -316,4 +309,3 @@ document.getElementById("copyBtn").addEventListener("click", function() {
 
 </body>
 </html>
-
