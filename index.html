@@ -2,310 +2,255 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Secret Pet Hatch Calculator - Polished</title>
+<title>Secret Pet Hatch Calculator - Full Version</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0f0f14;
-    color: #eaeaea;
-    display: flex;
-    justify-content: center;
-    padding: 30px 10px;
-  }
-
-  .box {
-    background: #1c1c26;
-    padding: 25px;
-    border-radius: 12px;
-    width: 520px;
-    max-width: 100%;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  }
-
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #00aaff;
-  }
-
-  .inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-    margin-bottom: 15px;
-  }
-
-  .input-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .input-group label {
-    font-size: 13px;
-    margin-bottom: 3px;
-  }
-
-  .input-group input {
-    padding: 6px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #333;
-    background: #0f0f14;
-    color: #eaeaea;
-    transition: background 0.2s;
-  }
-
-  .input-group input:focus {
-    background: #1a1a28;
-    outline: none;
-  }
-
-  button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    margin-top: 10px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(90deg, #00aaff, #0066cc);
-    color: #fff;
-    font-weight: bold;
-    transition: 0.2s;
-  }
-
-  button:hover {
-    background: linear-gradient(90deg, #00ccff, #004c99);
-  }
-
-  .output-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-  }
-
-  pre {
-    margin-top: 10px;
-    white-space: pre-wrap;
-    font-size: 14px;
-    background: #0f0f14;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #333;
-  }
-
-  /* Tooltip CSS */
-  .info {
-    position: relative;
-    cursor: pointer;
-    color: #00aaff;
-    margin-left: 4px;
-    font-weight: bold;
-  }
-
-  .tooltip {
-    visibility: hidden;
-    width: 280px;
-    background-color: #333;
-    color: #fff;
-    text-align: left;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -140px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 12px;
-  }
-
-  .info:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  @media(max-width: 600px){
-    .inputs {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .signature {
-    text-align:center; font-size:12px; margin-top:10px; color:#888;
-  }
-
-  .feedback {
-    text-align:center; margin-top:5px;
-  }
-
-  .feedback a {
-    color:#00aaff; text-decoration:none; font-size:13px;
-  }
+body {
+  margin:0; font-family:Arial,sans-serif; background:#0f0f14; color:#eaeaea; display:flex; justify-content:center; padding:20px;
+}
+.container {
+  width: 100%; max-width: 700px;
+}
+.tabs {
+  display:flex; justify-content:space-around; margin-bottom:15px;
+}
+.tab {
+  cursor:pointer; padding:10px 15px; border-radius:8px; background:#1c1c26; transition:0.2s;
+}
+.tab.active { background:#00aaff; font-weight:bold; color:#fff;}
+.section { display:none; background:#1c1c26; padding:20px; border-radius:12px; }
+.section.active { display:block; }
+.inputs { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-bottom:15px;}
+.input-group { display:flex; flex-direction:column;}
+.input-group label { font-size:13px; margin-bottom:3px; }
+.input-group input[type=number], .input-group input[type=text], select { padding:6px; font-size:14px; border-radius:5px; border:1px solid #333; background:#0f0f14; color:#eaeaea;}
+.input-group input:focus { background:#1a1a28; outline:none;}
+button { padding:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(90deg,#00aaff,#0066cc); color:#fff; font-weight:bold; transition:0.2s; margin-top:5px;}
+button:hover { background:linear-gradient(90deg,#00ccff,#004c99);}
+pre { margin-top:10px; white-space:pre-wrap; font-size:14px; background:#0f0f14; padding:10px; border-radius:5px; border:1px solid #333;}
+.info { position:relative; cursor:pointer; color:#00aaff; margin-left:4px; font-weight:bold;}
+.tooltip { visibility:hidden; width:280px; background:#333; color:#fff; text-align:left; border-radius:6px; padding:8px; position:absolute; z-index:1; bottom:125%; left:50%; margin-left:-140px; opacity:0; transition:0.3s; font-size:12px;}
+.info:hover .tooltip { visibility:visible; opacity:1;}
+.signature { text-align:center; font-size:12px; margin-top:10px; color:#888; }
+.feedback { text-align:center; margin-top:5px; }
+.feedback a { color:#00aaff; text-decoration:none; font-size:13px; }
+@media(max-width:600px){ .inputs { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-
-<div class="box">
-  <h2>Secret Pet Hatch Calculator</h2>
-
-  <div class="inputs">
-
-    <div class="input-group">
-      <label for="baseRarity">Base Rarity 🐣</label>
-      <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, 1/25m, 25m">
-    </div>
-
-    <div class="input-group">
-      <label for="yourLuck">
-        Your Luck 🍀
-        <span class="info">ℹ
-          <span class="tooltip">
-            🔹 To get your current luck, hover over every potion you have on and add all of them together.<br>
-            🔹 Also add every gamepass to your luck.<br>
-            🔹 Don’t forget purchasable luck around the map.<br>
-            🔹 10% = 0.1x. Do <b>not</b> multiply them.<br>
-            🔹 Example: (1.5x + 2x + 3x + 4x + 2x + 4x + 1.3x = 22.8)
-          </span>
-        </span>
-      </label>
-      <input id="yourLuck" placeholder="Your in-game luck multipliers">
-    </div>
-
-    <div class="input-group">
-      <label for="eventLuck">Event Luck 🎉
-        <span class="info">ℹ
-          <span class="tooltip">
-            Only include active event multipliers here. Separate from Your Luck.
-          </span>
-        </span>
-      </label>
-      <input id="eventLuck" value="1" placeholder="Optional, default 1">
-    </div>
-
-    <div class="input-group">
-      <label for="adminLuck">Admin Abuse Luck 🛠️
-        <span class="info">ℹ
-          <span class="tooltip">
-            Only for admin/spawned eggs. Leave 1 if not applicable.
-          </span>
-        </span>
-      </label>
-      <input id="adminLuck" value="1" placeholder="Optional, default 1">
-    </div>
-
-    <div class="input-group">
-      <label for="eggsBatch">Eggs per Batch 🐣</label>
-      <input id="eggsBatch" placeholder="Number of eggs hatched at once">
-    </div>
-
-    <div class="input-group">
-      <label for="hatchSpeed">Hatch Speed ⏱️
-        <span class="info">ℹ
-          <span class="tooltip">
-            Base hatch time per batch. Default 2.57 seconds.
-          </span>
-        </span>
-      </label>
-      <input id="hatchSpeed" value="2.57" placeholder="Default 2.57s">
-    </div>
-
-    <div class="input-group">
-      <label for="hatchEvent">Hatch Speed Event Multiplier ⏱️
-        <span class="info">ℹ
-          <span class="tooltip">
-            Multiply hatch speed reduction from events. Example: 2x makes batches hatch twice as fast.
-          </span>
-        </span>
-      </label>
-      <input id="hatchEvent" value="1" placeholder="Optional, default 1">
-    </div>
-
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="single">Single Pet Calculator</div>
+    <div class="tab" data-tab="multi">Multi-Egg Odds</div>
+    <div class="tab" data-tab="sim">Hatch Simulator</div>
   </div>
 
-  <button id="calcBtn">Calculate</button>
-
-  <div class="output-buttons">
+  <!-- SINGLE PET CALCULATOR -->
+  <div class="section active" id="single">
+    <div class="inputs">
+      <div class="input-group">
+        <label for="baseRarity">Base Rarity 🐣</label>
+        <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, 1/25m, 25m">
+      </div>
+      <div class="input-group">
+        <label for="yourLuck">Your Luck 🍀
+          <span class="info">ℹ
+            <span class="tooltip">🔹 To get your current luck, hover over every potion you have on and add all of them together.<br>🔹 Also add every gamepass to your luck.<br>🔹 Don’t forget purchasable luck around the map.<br>🔹 10% = 0.1x. Do <b>not</b> multiply them.<br>Example: (1.5x + 2x + 3x + 4x + 2x + 4x + 1.3x = 22.8)</span>
+          </span>
+        </label>
+        <input id="yourLuck" placeholder="Your in-game luck multipliers">
+      </div>
+      <div class="input-group">
+        <label for="eventLuck">Event Luck 🎉</label>
+        <input id="eventLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="adminLuck">Admin Abuse Luck 🛠️</label>
+        <input id="adminLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="eggsBatch">Eggs per Batch 🐣</label>
+        <input id="eggsBatch" type="number" placeholder="Number of eggs per batch">
+      </div>
+      <div class="input-group">
+        <label for="hatchSpeed">Hatch Speed ⏱️</label>
+        <input id="hatchSpeed" type="number" value="2.57">
+      </div>
+      <div class="input-group">
+        <label for="hatchEvent">Hatch Speed Event ⏱️</label>
+        <input id="hatchEvent" type="number" value="1">
+      </div>
+    </div>
+    <button id="calcBtn">Calculate</button>
     <button id="copyBtn">📋 Copy Output</button>
+    <pre id="output"></pre>
   </div>
 
-  <pre id="output"></pre>
+  <!-- MULTI-EGG ODDS -->
+  <div class="section" id="multi">
+    <div class="inputs">
+      <div class="input-group" style="grid-column:1/-1;">
+        <label for="eggSelect">Egg Type 🥚</label>
+        <select id="eggSelect">
+          <option value="Basic">Basic Egg</option>
+          <option value="Shark">Shark Egg</option>
+          <option value="Glacier">Glacier Egg</option>
+          <option value="Mystic">Mystic Egg</option>
+          <option value="Crystal">Crystal Egg</option>
+          <option value="Blossom">Blossom Egg</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="multiYourLuck">Your Luck 🍀</label>
+        <input id="multiYourLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="multiEventLuck">Event Luck 🎉</label>
+        <input id="multiEventLuck" type="number" value="1">
+      </div>
+    </div>
+    <button id="multiCalcBtn">Calculate Multi-Odds</button>
+    <button id="multiCopyBtn">📋 Copy Output</button>
+    <pre id="multiOutput"></pre>
+  </div>
+
+  <!-- HATCH SIMULATOR -->
+  <div class="section" id="sim">
+    <div class="inputs">
+      <div class="input-group">
+        <label for="simEggSelect">Egg Type 🥚</label>
+        <select id="simEggSelect">
+          <option value="Basic">Basic Egg</option>
+          <option value="Shark">Shark Egg</option>
+          <option value="Glacier">Glacier Egg</option>
+          <option value="Mystic">Mystic Egg</option>
+          <option value="Crystal">Crystal Egg</option>
+          <option value="Blossom">Blossom Egg</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="simYourLuck">Your Luck 🍀</label>
+        <input id="simYourLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="simEventLuck">Event Luck 🎉</label>
+        <input id="simEventLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="simAdminLuck">Admin Abuse Luck 🛠️</label>
+        <input id="simAdminLuck" type="number" value="1">
+      </div>
+      <div class="input-group">
+        <label for="simBatches">Batches to Simulate 🐣</label>
+        <input id="simBatches" type="number" value="100">
+      </div>
+    </div>
+    <button id="simBtn">Simulate Hatches</button>
+    <button id="simCopyBtn">📋 Copy Output</button>
+    <pre id="simOutput"></pre>
+  </div>
 
   <div class="feedback">
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSdPrTZ1_LCVV-7HxXxlKlhCcpgILnNa33Cb-0QCgihAfNmM1A/viewform?usp=header" target="_blank">💬 Feedback</a>
   </div>
-
   <div class="signature">By: iQovz</div>
 </div>
 
 <script>
-function parseRarity(input) {
-  input = input.toLowerCase().replace(/,/g,"").trim();
+// TAB SWITCHING
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
 
-  if(input.endsWith("%")) {
-    let val = Number(input.replace("%",""))/100;
-    return Math.round(1/val);
-  }
-
-  if(input.includes("/")) {
-    let parts = input.split("/");
-    let denom = parts[1];
-
-    if(denom.endsWith("k")) denom = Number(denom.replace("k",""))*1000;
-    else if(denom.endsWith("m")) denom = Number(denom.replace("m",""))*1000000;
-    return Number(denom);
-  }
-
-  let val = Number(input);
+// HELPER FUNCTION TO PARSE BASE RARITY
+function parseRarity(input){
+  input=input.toLowerCase().replace(/,/g,'').trim();
+  if(input.endsWith('%')) return Math.round(1/(Number(input.replace('%',''))/100));
+  if(input.includes('/')){ let parts=input.split('/'); let denom=parts[1]; if(denom.endsWith('k')) denom=Number(denom.replace('k',''))*1000; else if(denom.endsWith('m')) denom=Number(denom.replace('m',''))*1000000; return Number(denom);}
+  let val=Number(input);
   if(val>0 && val<1) return Math.round(1/val);
-  if(input.endsWith("k")) return Number(input.replace("k",""))*1000;
-  if(input.endsWith("m")) return Number(input.replace("m",""))*1000000;
+  if(input.endsWith('k')) return Number(input.replace('k',''))*1000;
+  if(input.endsWith('m')) return Number(input.replace('m',''))*1000000;
   return Number(input);
 }
 
-document.getElementById("calcBtn").addEventListener("click", function() {
-  const base = parseRarity(document.getElementById("baseRarity").value);
-  const yourLuck = Number(document.getElementById("yourLuck").value) || 1;
-  const eventLuck = Number(document.getElementById("eventLuck").value) || 1;
-  const adminLuck = Number(document.getElementById("adminLuck").value) || 1;
-  const eggsBatch = Number(document.getElementById("eggsBatch").value);
-  const hatchSpeed = Number(document.getElementById("hatchSpeed").value) || 2.57;
-  const hatchEvent = Number(document.getElementById("hatchEvent").value) || 1;
-
-  if(!base || !eggsBatch || eggsBatch <=0){
-    document.getElementById("output").textContent="Please enter valid Base Rarity and Eggs per Batch.";
-    return;
-  }
-
-  const totalLuck = yourLuck * eventLuck * adminLuck;
-  const odds = base / totalLuck;
-  const totalBatches = odds / eggsBatch;
-  const adjustedHatchTime = hatchSpeed / hatchEvent;
-  const totalTimeSec = totalBatches * adjustedHatchTime;
-
-  let displayTime;
-  if(totalTimeSec < 60) displayTime = totalTimeSec.toFixed(2) + " seconds";
-  else if(totalTimeSec < 3600) displayTime = (totalTimeSec/60).toFixed(2) + " minutes";
-  else if(totalTimeSec < 86400) displayTime = (totalTimeSec/3600).toFixed(2) + " hours";
-  else displayTime = (totalTimeSec/86400).toFixed(2) + " days";
-
-  document.getElementById("output").textContent =
+// SINGLE PET CALCULATOR
+document.getElementById('calcBtn').addEventListener('click',()=>{
+  const base=parseRarity(document.getElementById('baseRarity').value);
+  const yourLuck=Number(document.getElementById('yourLuck').value)||1;
+  const eventLuck=Number(document.getElementById('eventLuck').value)||1;
+  const adminLuck=Number(document.getElementById('adminLuck').value)||1;
+  const eggsBatch=Number(document.getElementById('eggsBatch').value);
+  const hatchSpeed=Number(document.getElementById('hatchSpeed').value)||2.57;
+  const hatchEvent=Number(document.getElementById('hatchEvent').value)||1;
+  if(!base||!eggsBatch||eggsBatch<=0){document.getElementById('output').textContent='Please enter valid Base Rarity and Eggs per Batch.'; return;}
+  const totalLuck=yourLuck*eventLuck*adminLuck;
+  const odds=base/totalLuck;
+  const totalBatches=odds/eggsBatch;
+  const adjustedHatchTime=hatchSpeed/hatchEvent;
+  const totalTimeSec=totalBatches*adjustedHatchTime;
+  let displayTime; if(totalTimeSec<60) displayTime=totalTimeSec.toFixed(2)+' seconds';
+  else if(totalTimeSec<3600) displayTime=(totalTimeSec/60).toFixed(2)+' minutes';
+  else if(totalTimeSec<86400) displayTime=(totalTimeSec/3600).toFixed(2)+' hours';
+  else displayTime=(totalTimeSec/86400).toFixed(2)+' days';
+  document.getElementById('output').textContent=
 `Your Current Luck: ${totalLuck.toLocaleString()}x
 Chances: 1/${Math.round(odds).toLocaleString()}
 Time to Hatch: ~${displayTime}
 Adjusted Hatch Time per Batch: ${adjustedHatchTime.toFixed(2)} seconds
 Total Hatches needed: ${Math.round(totalBatches).toLocaleString()}`;
 });
+document.getElementById('copyBtn').addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>alert('Output copied!'));});
 
-document.getElementById("copyBtn").addEventListener("click", function() {
-  const output = document.getElementById("output").textContent;
-  navigator.clipboard.writeText(output).then(() => {
-    alert("Output copied to clipboard!");
+// MULTI-EGG DATA
+const eggsData={
+  "Basic":[{name:"Dragon",chance:100},{name:"Royal Blob",chance:100000}],
+  "Shark":[{name:"Shark",chance:100}],
+  "Glacier":[{name:"Yeti",chance:52.63},{name:"Frost Dragon",chance:1000}],
+  "Mystic":[{name:"Taurus",chance:52.63},{name:"Goblin",chance:1000},{name:"Mystic Hexo",chance:100000}],
+  "Crystal":[{name:"Dominus",chance:1000},{name:"Flying Gem",chance:100000}],
+  "Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}]
+};
+
+// MULTI-EGG CALCULATOR
+document.getElementById('multiCalcBtn').addEventListener('click',()=>{
+  const egg=document.getElementById('eggSelect').value;
+  const yourLuck=Number(document.getElementById('multiYourLuck').value)||1;
+  const eventLuck=Number(document.getElementById('multiEventLuck').value)||1;
+  const totalLuck=yourLuck*eventLuck;
+  let output=`Egg: ${egg}\n`;
+  eggsData[egg].forEach(p=>{
+    const adjusted=Math.round(p.chance/totalLuck);
+    output+=`${p.name}: 1/${adjusted}\n`;
   });
+  document.getElementById('multiOutput').textContent=output;
 });
-</script>
+document.getElementById('multiCopyBtn').addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('multiOutput').textContent).then(()=>alert('Output copied!'));});
 
+// SIMULATOR
+document.getElementById('simBtn').addEventListener('click',()=>{
+  const egg=document.getElementById('simEggSelect').value;
+  const yourLuck=Number(document.getElementById('simYourLuck').value)||1;
+  const eventLuck=Number(document.getElementById('simEventLuck').value)||1;
+  const adminLuck=Number(document.getElementById('simAdminLuck').value)||1;
+  const batches=Number(document.getElementById('simBatches').value)||100;
+  const totalLuck=yourLuck*eventLuck*adminLuck;
+  const results={};
+  eggsData[egg].forEach(p=>results[p.name]=0);
+  for(let i=0;i<batches;i++){
+    eggsData[egg].forEach(p=>{
+      if(Math.random()<totalLuck/p.chance) results[p.name]++;
+    });
+  }
+  let output=`Simulated ${batches} batches for ${egg}:\n`;
+  for(const pet in results) output+=`${pet}: ${results[pet]}\n`;
+  document.getElementById('simOutput').textContent=output;
+});
+document.getElementById('simCopyBtn').addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('simOutput').textContent).then(()=>alert('Output copied!'));});
+</script>
 </body>
 </html>
