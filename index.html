@@ -18,24 +18,36 @@
     background: #1c1c26;
     padding: 20px;
     border-radius: 10px;
-    width: 400px;
+    width: 420px;
   }
-  input {
+  .input-group {
+    margin-bottom: 10px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .input-group input {
     width: 100%;
-    padding: 8px;
-    margin: 6px 0;
-    font-size: 16px;
+    padding: 6px;
+    font-size: 14px;
   }
   button {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     font-size: 16px;
     margin-top: 10px;
     cursor: pointer;
+    border-radius: 5px;
   }
   pre {
     margin-top: 15px;
     white-space: pre-wrap;
+    font-size: 14px;
+    background: #0f0f14;
+    padding: 10px;
+    border-radius: 5px;
   }
 </style>
 </head>
@@ -43,13 +55,42 @@
 
 <div class="box">
   <h2>Secret Pet Hatch Calculator</h2>
-  <input id="baseRarity" placeholder="Base Rarity (0.0002%, 1/25k, 25k, etc.)">
-  <input id="yourLuck" placeholder="Your Luck (potions/boosts)">
-  <input id="eventLuck" placeholder="Event Luck (optional, default 1)" value="1">
-  <input id="adminLuck" placeholder="Admin Abuse Luck (optional, default 1)" value="1">
-  <input id="eggsBatch" placeholder="Eggs per Batch">
-  <input id="hatchSpeed" placeholder="Hatch Speed (s per batch, default 2.57)" value="2.57">
-  <input id="hatchEvent" placeholder="Hatch Speed Event Multiplier (optional, default 1)" value="1">
+
+  <div class="input-group">
+    <label for="baseRarity">Base Rarity</label>
+    <input id="baseRarity" placeholder="0.0002%, 1/25k, 25k, etc.">
+  </div>
+
+  <div class="input-group">
+    <label for="yourLuck">Your Luck</label>
+    <input id="yourLuck" placeholder="Your in-game luck multipliers">
+  </div>
+
+  <div class="input-group">
+    <label for="eventLuck">Event Luck</label>
+    <input id="eventLuck" value="1" placeholder="Optional, default 1">
+  </div>
+
+  <div class="input-group">
+    <label for="adminLuck">Admin Abuse Luck</label>
+    <input id="adminLuck" value="1" placeholder="Optional, default 1">
+  </div>
+
+  <div class="input-group">
+    <label for="eggsBatch">Eggs per Batch</label>
+    <input id="eggsBatch" placeholder="Number of eggs hatched at once">
+  </div>
+
+  <div class="input-group">
+    <label for="hatchSpeed">Hatch Speed (s per batch)</label>
+    <input id="hatchSpeed" value="2.57" placeholder="Default 2.57s">
+  </div>
+
+  <div class="input-group">
+    <label for="hatchEvent">Hatch Speed Event Multiplier</label>
+    <input id="hatchEvent" value="1" placeholder="Optional, default 1">
+  </div>
+
   <button id="calcBtn">Calculate</button>
   <pre id="output"></pre>
 </div>
@@ -58,13 +99,11 @@
 function parseRarity(input) {
   input = input.toLowerCase().replace(/,/g,"").trim();
 
-  // Handle percentages
   if(input.endsWith("%")) {
     let val = Number(input.replace("%",""))/100;
     return Math.round(1/val);
   }
 
-  // Fraction format
   if(input.includes("/")) {
     let parts = input.split("/");
     let denom = parts[1];
@@ -72,14 +111,11 @@ function parseRarity(input) {
     return Number(denom);
   }
 
-  // Decimal <1
   let val = Number(input);
   if(val>0 && val<1) return Math.round(1/val);
 
-  // k format
   if(input.endsWith("k")) return Number(input.replace("k",""))*1000;
 
-  // Plain number
   return Number(input);
 }
 
