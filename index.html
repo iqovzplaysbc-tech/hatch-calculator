@@ -45,6 +45,27 @@ pre {
 
 <script>
 function parseRarity(text) {
+  text = text.toLowerCase().trim().replace(/,/g, "");
+
+  if (text.includes("/")) {
+    let parts = text.split("/");
+    let num = Number(parts[0]);
+    let den = parts[1].replace("k", "000");
+
+    return Number(den) / num;
+  }
+
+  let value = Number(text);
+  if (value > 1) {
+    return value;
+  }
+
+  if (value > 0 && value < 1) {
+    return 1 / value;
+  }
+
+  return NaN;
+}
   text = text.toLowerCase().trim();
 
   if (text.includes("/")) {
@@ -105,3 +126,4 @@ How this was calculated:
 </script>
 </body>
 </html>
+
