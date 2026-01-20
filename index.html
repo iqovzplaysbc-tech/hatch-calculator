@@ -4,53 +4,41 @@
 <meta charset="UTF-8">
 <title>Secret Pet Hatch Calculator - Full Version</title>
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;display:flex;justify-content:center;padding:20px;transition:0.3s;}
-body.light {background:#f5f5f5;color:#111;}
+body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;display:flex;justify-content:center;padding:20px;transition:background 0.3s,color 0.3s;}
+body.light {background:#f0f0f5;color:#111;}
 .container {width:100%;max-width:700px;}
-.announcement {background:#1f2937;border:1px solid #00aaff;color:#cfefff;padding:10px;border-radius:10px;text-align:center;margin-bottom:15px;font-size:14px;transition:0.3s;}
-body.light .announcement {background:#e0f7ff;border:1px solid #00aaff;color:#111;}
+.announcement {background:#1f2937;border:1px solid #00aaff;color:#cfefff;padding:10px;border-radius:10px;text-align:center;margin-bottom:15px;font-size:14px;}
 .tabs {display:flex;justify-content:space-around;margin-bottom:15px;}
 .tab {cursor:pointer;padding:10px 15px;border-radius:8px;background:#1c1c26;transition:0.2s;}
 .tab.active {background:#00aaff;font-weight:bold;color:#fff;}
-body.light .tab {background:#ddd;color:#111;}
-body.light .tab.active {background:#00aaff;color:#fff;}
-.section {display:none;background:#1c1c26;padding:20px;border-radius:12px;transition:0.3s;}
-body.light .section {background:#f0f0f0;color:#111;}
+.section {display:none;background:#1c1c26;padding:20px;border-radius:12px;}
 .section.active {display:block;}
 .inputs {display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:15px;}
 .input-group {display:flex;flex-direction:column;}
 .input-group label {font-size:13px;margin-bottom:3px;}
 .input-group input, select {padding:6px;font-size:14px;border-radius:5px;border:1px solid #333;background:#0f0f14;color:#eaeaea;}
-body.light .input-group input, body.light select {background:#fff;color:#111;border:1px solid #aaa;}
+.input-group input:focus {background:#1a1a28;outline:none;}
 button {padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(90deg,#00aaff,#0066cc);color:#fff;font-weight:bold;margin-top:5px;transition:0.2s;}
 button:hover {background:linear-gradient(90deg,#00ccff,#004c99);}
 pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;}
-body.light pre {background:#fff;color:#111;border:1px solid #aaa;}
 .info {position:relative;cursor:pointer;color:#00aaff;margin-left:4px;font-weight:bold;}
 .tooltip {visibility:hidden;width:280px;background:#333;color:#fff;text-align:left;border-radius:6px;padding:8px;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-140px;opacity:0;transition:0.3s;font-size:12px;}
 .info:hover .tooltip {visibility:visible;opacity:1;}
 .feedback {text-align:center;margin-top:5px;}
 .feedback a {color:#00aaff;text-decoration:none;font-size:13px;}
 .signature {text-align:center;font-size:12px;margin-top:10px;color:#888;}
-.progress-container {background:#333;border-radius:5px;height:15px;margin:5px 0;overflow:hidden;}
-.progress-bar {height:100%;width:0%;transition:width 0.5s;}
-.progress-bar.secret {background:#ff4c4c;} 
-.progress-bar.mythic {background:#4c8cff;} 
-.progress-bar.legendary {background:#4cff4c;} 
+.progress-container {position:relative;height:18px;background:#1c1c26;border-radius:8px;margin:3px 0 8px 0;overflow:hidden;}
+.progress-bar {height:100%;border-radius:8px;transition:width 0.3s;}
+.progress-bar.expected {position:absolute;top:0;left:0;height:100%;border-radius:8px;opacity:0.5;}
 @media(max-width:600px){.inputs{grid-template-columns:1fr;}}
 </style>
 </head>
-
 <body>
 <div class="container">
-
-<!-- THEME TOGGLE -->
+<div class="announcement" id="announcementBox"></div>
 <div style="text-align:center;margin-bottom:10px;">
-  <button id="themeBtn">🌙 Toggle Light/Dark Mode</button>
+<button id="toggleTheme">🌙 Toggle Light/Dark Mode</button>
 </div>
-
-<div id="announcementBox" class="announcement"></div>
-
 <div class="tabs">
   <div class="tab active" data-tab="single">Single Pet Calculator</div>
   <div class="tab" data-tab="multi">Multi-Egg Odds</div>
@@ -61,51 +49,27 @@ body.light pre {background:#fff;color:#111;border:1px solid #aaa;}
 <div class="section active" id="single">
   <div class="inputs">
     <div class="input-group">
-      <label>Base Rarity 🐣 
-        <span class="info">ℹ
-          <span class="tooltip">Chances of the pet</span>
-        </span>
-      </label>
+      <label>Base Rarity 🐣 <span class="info">ℹ<small class="tooltip">Chances of the pet</small></span></label>
       <input id="baseRarity" placeholder="1/25k, 25k, 0.0002%">
     </div>
     <div class="input-group">
-      <label>Your Luck 🍀 
-        <span class="info">ℹ
-          <span class="tooltip">Add up all of your boosts by hovering over them. Don't multiply. Include gamepasses and purchasables. Event luck excluded.</span>
-        </span>
-      </label>
-      <input id="yourLuck" placeholder="Add all boosts">
+      <label>Your Luck 🍀 <span class="info">ℹ<small class="tooltip">Add up all your boosts. Don't multiply. Add gamepasses/purchasable luck. Event luck does not count.</small></span></label>
+      <input id="yourLuck" placeholder="Add all potions, gamepass, purchasable luck">
     </div>
     <div class="input-group">
-      <label>Event Luck 🎉 
-        <span class="info">ℹ
-          <span class="tooltip">Type 1 if no active event luck, otherwise enter value.</span>
-        </span>
-      </label>
+      <label>Event Luck 🎉 <span class="info">ℹ<small class="tooltip">If there is an ongoing luck event, type it here. Otherwise type 1.</small></span></label>
       <input id="eventLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Admin Abuse Luck 🛠️ 
-        <span class="info">ℹ
-          <span class="tooltip">Enter the luck applied on Admin Abuse egg.</span>
-        </span>
-      </label>
+      <label>Admin Abuse Luck 🛠️ <span class="info">ℹ<small class="tooltip">Luck on the Admin Abuse egg type.</small></span></label>
       <input id="adminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Eggs per Batch 🥚 
-        <span class="info">ℹ
-          <span class="tooltip">Number of eggs hatched per press.</span>
-        </span>
-      </label>
+      <label>Eggs per Batch 🥚 <span class="info">ℹ<small class="tooltip">Number of eggs per batch.</small></span></label>
       <input id="eggsBatch" type="number" placeholder="Number of eggs per batch">
     </div>
     <div class="input-group">
-      <label>Hatch Speed ⏱️ 
-        <span class="info">ℹ
-          <span class="tooltip">Normal hatch speed is 2.57s per egg.</span>
-        </span>
-      </label>
+      <label>Hatch Speed ⏱️ <span class="info">ℹ<small class="tooltip">Normal hatch speed is 2.57 seconds per egg.</small></span></label>
       <input id="hatchSpeed" type="number" value="2.57">
     </div>
   </div>
@@ -132,7 +96,7 @@ body.light pre {background:#fff;color:#111;border:1px solid #aaa;}
   </div>
   <button id="multiCalcBtn">Calculate Multi-Odds</button>
   <button id="multiCopyBtn">📋 Copy Output</button>
-  <div id="multiOutput"></div>
+  <pre id="multiOutput"></pre>
 </div>
 
 <!-- HATCH SIMULATOR -->
@@ -155,35 +119,31 @@ body.light pre {background:#fff;color:#111;border:1px solid #aaa;}
       <input id="simAdminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Batches to Simulate 🐣
-        <span class="info">ℹ
-          <span class="tooltip">How many batches to simulate. Ex: 100</span>
-        </span>
-      </label>
+      <label>Batches to Simulate 🐣 <span class="info">ℹ<small class="tooltip">How many batches to simulate. Ex: 1000.</small></span></label>
       <input id="simBatches" type="number" value="100">
     </div>
   </div>
   <button id="simBtn">Simulate Hatches</button>
   <button id="simCopyBtn">📋 Copy Output</button>
-  <div id="simOutput"></div>
+  <pre id="simOutput"></pre>
 </div>
 
-<div class="feedback">
-  <a href="https://forms.gle/TbxWf1RvkZz3TZxo6" target="_blank">💬 Feedback</a>
-</div>
+<div class="feedback"><a href="https://forms.gle/TbxWf1RvkZz3TZxo6" target="_blank">💬 Feedback</a></div>
 <div class="signature">By: iQovz</div>
+
+</div>
 
 <script>
 // ================== ANNOUNCEMENT ==================
 const ANNOUNCEMENT_TEXT = "🔥If you have any ideas for this website, go to the feedback menu and let me know. Also, hatch the Blossom egg, limited 1/500k secret pet being removed soon.";
 document.getElementById('announcementBox').textContent = ANNOUNCEMENT_TEXT;
 
-// ================== THEME TOGGLE ==================
-document.getElementById('themeBtn').onclick = () => document.body.classList.toggle('light');
+// ================== LIGHT/DARK TOGGLE ==================
+document.getElementById('toggleTheme').onclick = () => document.body.classList.toggle('light');
 
 // ================== TABS ==================
 document.querySelectorAll('.tab').forEach(tab=>{
-  tab.onclick=()=>{
+  tab.onclick = ()=>{
     document.querySelectorAll('.tab,.section').forEach(e=>e.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab).classList.add('active');
@@ -210,18 +170,18 @@ function parseRarity(input){
 
 // ================== EGG DATA ==================
 const eggsData = {
-  "Basic":[{name:"Dragon",chance:100,rarity:"legendary"},{name:"Royal Blob",chance:100000,rarity:"secret"}],
-  "Shark":[{name:"Shark",chance:100,rarity:"legendary"}],
-  "Glacier":[{name:"Yeti",chance:52.63,rarity:"legendary"},{name:"Frost Dragon",chance:1000,rarity:"mythic"}],
-  "Mystic":[{name:"Taurus",chance:52.63,rarity:"legendary"},{name:"Goblin",chance:1000,rarity:"mythic"},{name:"Mystic Hexo",chance:100000,rarity:"secret"}],
-  "Crystal":[{name:"Dominus",chance:1000,rarity:"mythic"},{name:"Flying Gem",chance:100000,rarity:"secret"}],
-  "Blossom":[{name:"Blossom Dominus",chance:1000,rarity:"mythic"},{name:"Flower Trophy",chance:100000,rarity:"secret"},{name:"Eternal Flower",chance:500000,rarity:"secret"}],
-  "Magic":[{name:"Clown",chance:25000,rarity:"secret"}],
-  "Fire Ring":[{name:"Festival Bunny",chance:100,rarity:"legendary"},{name:"Festival Dragon",chance:1000,rarity:"mythic"},{name:"Fire Ring Lion",chance:100000,rarity:"secret"},{name:"Ultra Dice",chance:500000,rarity:"secret"}]
+"Basic":[{name:"Dragon",chance:100},{name:"Royal Blob",chance:100000}],
+"Shark":[{name:"Shark",chance:100}],
+"Glacier":[{name:"Yeti",chance:52.63},{name:"Frost Dragon",chance:1000}],
+"Mystic":[{name:"Taurus",chance:52.63},{name:"Goblin",chance:1000},{name:"Mystic Hexo",chance:100000}],
+"Crystal":[{name:"Dominus",chance:1000},{name:"Flying Gem",chance:100000}],
+"Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}],
+"Magic":[{name:"Clown",chance:25000}],
+"Fire Ring":[{name:"Festival Bunny",chance:100},{name:"Festival Dragon",chance:1000},{name:"Fire Ring Lion",chance:100000},{name:"Ultra Dice",chance:500000}]
 };
 
 // ================== POPULATE SELECTS ==================
-[document.getElementById('eggSelect'), document.getElementById('simEggSelect')].forEach(sel=>{
+[document.getElementById('eggSelect'),document.getElementById('simEggSelect')].forEach(sel=>{
   Object.keys(eggsData).forEach(e=>{
     let o=document.createElement('option'); o.value=o.textContent=e; sel.appendChild(o);
   });
@@ -229,83 +189,85 @@ const eggsData = {
 
 // ================== SINGLE CALCULATOR ==================
 document.getElementById('calcBtn').onclick = () => {
-  const baseRarityInput = document.getElementById('baseRarity');
-  const yourLuckInput = document.getElementById('yourLuck');
-  const eventLuckInput = document.getElementById('eventLuck');
-  const adminLuckInput = document.getElementById('adminLuck');
-  const eggsBatchInput = document.getElementById('eggsBatch');
-  const hatchSpeedInput = document.getElementById('hatchSpeed');
+  const base = parseRarity(document.getElementById('baseRarity').value);
+  const yourLuck = Number(document.getElementById('yourLuck').value)||1;
+  const eventLuck = Number(document.getElementById('eventLuck').value)||1;
+  const adminLuck = Number(document.getElementById('adminLuck').value)||1;
+  const eggs = Number(document.getElementById('eggsBatch').value);
+  const hatchSpeed = Number(document.getElementById('hatchSpeed').value)||2.57;
   const output = document.getElementById('output');
-
-  const base = parseRarity(baseRarityInput.value);
-  const yourLuck = Number(yourLuckInput.value) || 1;
-  const eventLuck = Number(eventLuckInput.value) || 1;
-  const adminLuck = Number(adminLuckInput.value) || 1;
-  const eggs = Number(eggsBatchInput.value);
-  const hatchSpeedSec = Number(hatchSpeedInput.value) || 2.57;
-
-  if(!base || !eggs){
-    output.textContent = "Please enter valid Base Rarity and Eggs per Batch.";
-    return;
-  }
-
-  const totalLuck = yourLuck*eventLuck*adminLuck;
-  const odds = base/totalLuck;
-  const batches = odds/eggs;
-  const totalTimeSec = batches*hatchSpeedSec;
-
+  if(!base||!eggs){output.textContent="Please enter valid Base Rarity and Eggs per Batch.";return;}
+  const totalLuck=yourLuck*eventLuck*adminLuck;
+  const odds=base/totalLuck;
+  const batches=odds/eggs;
+  const totalTimeSec=batches*hatchSpeed;
   let displayTime;
-  if(totalTimeSec < 60) displayTime = totalTimeSec.toFixed(2) + ' seconds';
-  else if(totalTimeSec < 3600) displayTime = (totalTimeSec/60).toFixed(2) + ' minutes';
-  else if(totalTimeSec < 86400) displayTime = (totalTimeSec/3600).toFixed(2) + ' hours';
-  else displayTime = (totalTimeSec/86400).toFixed(2) + ' days';
-
-  output.innerHTML =
+  if(totalTimeSec<60) displayTime=totalTimeSec.toFixed(2)+' seconds';
+  else if(totalTimeSec<3600) displayTime=(totalTimeSec/60).toFixed(2)+' minutes';
+  else if(totalTimeSec<86400) displayTime=(totalTimeSec/3600).toFixed(2)+' hours';
+  else displayTime=(totalTimeSec/86400).toFixed(2)+' days';
+  output.textContent=
 `Your Current Luck: ${totalLuck.toFixed(2)}x
 Chances: 1/${Math.round(odds).toLocaleString()}
 Time to Hatch: ~${displayTime}
-Adjusted Hatch Time per Batch: ${hatchSpeedSec.toFixed(2)} seconds
+Adjusted Hatch Time per Batch: ${hatchSpeed.toFixed(2)} seconds
 Total Hatches Needed: ${Math.round(batches).toLocaleString()}`;
 };
+document.getElementById('copyBtn').onclick=()=>{navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>alert('Copied!'));};
 
-// ================== MULTI-EGG CALCULATOR ==================
+// ================== MULTI-EGG ==================
 document.getElementById('multiCalcBtn').onclick=()=>{
   const egg=document.getElementById('eggSelect').value;
   const luck=(+document.getElementById('multiYourLuck').value||1)*(+document.getElementById('multiEventLuck').value||1);
-  const container=document.getElementById('multiOutput');
-  container.innerHTML='';
-  eggsData[egg].forEach(p=>{
-    const adj=Math.round(p.chance/luck);
-    const div=document.createElement('div');
-    div.textContent=`${p.name}: 1/${adj}`;
-    const bar=document.createElement('div'); bar.className='progress-container';
-    const inner=document.createElement('div'); inner.className='progress-bar '+p.rarity;
-    inner.style.width=Math.min(100,100/adj*1000)+'%';
-    bar.appendChild(inner); container.appendChild(div); container.appendChild(bar);
-  });
+  document.getElementById('multiOutput').textContent = eggsData[egg].map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`).join('\n');
 };
+document.getElementById('multiCopyBtn').onclick=()=>{navigator.clipboard.writeText(document.getElementById('multiOutput').textContent).then(()=>alert('Copied!'));};
 
-// ================== SIMULATOR ==================
-document.getElementById('simBtn').onclick=()=>{
-  const egg=document.getElementById('simEggSelect').value;
-  const luck=(+document.getElementById('simYourLuck').value||1)*(+document.getElementById('simEventLuck').value||1)*(+document.getElementById('simAdminLuck').value||1);
-  const batches=+document.getElementById('simBatches').value||100;
-  const container=document.getElementById('simOutput'); container.innerHTML='';
-  const results={}; eggsData[egg].forEach(p=>results[p.name]=0);
+// ================== SIMULATOR (progress bars + actual vs expected) ==================
+document.getElementById('simBtn').onclick = () => {
+  const egg = document.getElementById('simEggSelect').value;
+  const luck = (+document.getElementById('simYourLuck').value||1)*
+               (+document.getElementById('simEventLuck').value||1)*
+               (+document.getElementById('simAdminLuck').value||1);
+  const batches = +document.getElementById('simBatches').value||100;
+  const container = document.getElementById('simOutput'); 
+  container.innerHTML = '';
+
+  const results = {}; 
+  eggsData[egg].forEach(p => results[p.name] = 0);
+
   for(let i=0;i<batches;i++){
-    eggsData[egg].forEach(p=>{
-      if(Math.random()<luck/p.chance) results[p.name]++;
-    });
+    eggsData[egg].forEach(p => {if(Math.random()<luck/p.chance) results[p.name]++;});
   }
-  Object.entries(results).forEach(([k,v])=>{
-    const pData=eggsData[egg].find(p=>p.name===k);
-    const div=document.createElement('div'); div.textContent=`${k}: ${v}`;
-    const bar=document.createElement('div'); bar.className='progress-container';
-    const inner=document.createElement('div'); inner.className='progress-bar '+pData.rarity;
-    inner.style.width=Math.min(100,v/batches*100)+'%';
-    container.appendChild(div); container.appendChild(bar);
+
+  const maxResult = Math.max(...Object.values(results));
+
+  Object.entries(results).forEach(([name,count])=>{
+    const petData=eggsData[egg].find(p=>p.name===name);
+
+    const label = document.createElement('div'); 
+    label.textContent = `${name}: ${count} / Expected: 1/${Math.round(petData.chance/luck).toLocaleString()}`;
+    container.appendChild(label);
+
+    const barContainer = document.createElement('div'); 
+    barContainer.className='progress-container';
+
+    const bar=document.createElement('div'); 
+    bar.className='progress-bar';
+    bar.style.backgroundColor=petData.chance<=100?'#ff5555':petData.chance<=1000?'#55aaff':'#55ff55';
+    bar.style.width=Math.max(2,(count/maxResult)*100)+'%';
+    barContainer.appendChild(bar);
+
+    const expectedBar=document.createElement('div');
+    expectedBar.className='progress-bar expected';
+    expectedBar.style.width=Math.max(2,(batches/(petData.chance/luck))*100)+'%';
+    expectedBar.style.backgroundColor='#ffaa00';
+    barContainer.appendChild(expectedBar);
+
+    container.appendChild(barContainer);
   });
 };
+document.getElementById('simCopyBtn').onclick=()=>{navigator.clipboard.writeText(document.getElementById('simOutput').textContent).then(()=>alert('Copied!'));};
 </script>
 </body>
 </html>
