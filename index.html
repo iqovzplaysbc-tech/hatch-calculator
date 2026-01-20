@@ -6,6 +6,16 @@
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;display:flex;justify-content:center;padding:20px;}
 .container {width:100%;max-width:700px;}
+.announcement {
+  background:#1f2937;
+  border:1px solid #00aaff;
+  color:#cfefff;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+  margin-bottom:15px;
+  font-size:14px;
+}
 .tabs {display:flex;justify-content:space-around;margin-bottom:15px;}
 .tab {cursor:pointer;padding:10px 15px;border-radius:8px;background:#1c1c26;transition:0.2s;}
 .tab.active {background:#00aaff;font-weight:bold;color:#fff;}
@@ -14,8 +24,9 @@ body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;dis
 .inputs {display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:15px;}
 .input-group {display:flex;flex-direction:column;}
 .input-group label {font-size:13px;margin-bottom:3px;}
-.input-group input[type=number], .input-group input[type=text], select {
-  padding:6px;font-size:14px;border-radius:5px;border:1px solid #333;background:#0f0f14;color:#eaeaea;
+.input-group input, select {
+  padding:6px;font-size:14px;border-radius:5px;border:1px solid #333;
+  background:#0f0f14;color:#eaeaea;
 }
 button {
   padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;
@@ -25,13 +36,6 @@ pre {
   margin-top:10px;white-space:pre-wrap;font-size:14px;
   background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;
 }
-.info {position:relative;cursor:pointer;color:#00aaff;margin-left:4px;font-weight:bold;}
-.tooltip {
-  visibility:hidden;width:280px;background:#333;color:#fff;text-align:left;border-radius:6px;
-  padding:8px;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-140px;
-  opacity:0;transition:0.3s;font-size:12px;
-}
-.info:hover .tooltip {visibility:visible;opacity:1;}
 .feedback {text-align:center;margin-top:5px;}
 .feedback a {color:#00aaff;text-decoration:none;font-size:13px;}
 .signature {text-align:center;font-size:12px;margin-top:10px;color:#888;}
@@ -42,91 +46,44 @@ pre {
 <body>
 <div class="container">
 
+<div id="announcementBox" class="announcement"></div>
+
 <div class="tabs">
   <div class="tab active" data-tab="single">Single Pet Calculator</div>
   <div class="tab" data-tab="multi">Multi-Egg Odds</div>
   <div class="tab" data-tab="sim">Hatch Simulator</div>
 </div>
 
-<!-- SINGLE -->
 <div class="section active" id="single">
   <div class="inputs">
-    <div class="input-group">
-      <label>Base Rarity 🐣</label>
-      <input id="baseRarity" placeholder="1/25k, 25k, 0.004%">
-    </div>
-    <div class="input-group">
-      <label>Your Luck 🍀
-        <span class="info">ℹ
-          <span class="tooltip">
-            Add every luck source together.<br>
-            Example: 1.5 + 2 + 3 = 6.5
-          </span>
-        </span>
-      </label>
-      <input id="yourLuck">
-    </div>
-    <div class="input-group">
-      <label>Event Luck 🎉</label>
-      <input id="eventLuck" type="number" value="1">
-    </div>
-    <div class="input-group">
-      <label>Admin Luck 🛠️</label>
-      <input id="adminLuck" type="number" value="1">
-    </div>
-    <div class="input-group">
-      <label>Eggs per Batch</label>
-      <input id="eggsBatch" type="number">
-    </div>
-    <div class="input-group">
-      <label>Hatch Speed (sec)</label>
-      <input id="hatchSpeed" type="number" value="2.57">
-    </div>
+    <div class="input-group"><label>Base Rarity</label><input id="baseRarity"></div>
+    <div class="input-group"><label>Your Luck</label><input id="yourLuck"></div>
+    <div class="input-group"><label>Event Luck</label><input id="eventLuck" value="1"></div>
+    <div class="input-group"><label>Admin Luck</label><input id="adminLuck" value="1"></div>
+    <div class="input-group"><label>Eggs per Batch</label><input id="eggsBatch"></div>
   </div>
   <button id="calcBtn">Calculate</button>
-  <button id="copyBtn">📋 Copy</button>
   <pre id="output"></pre>
 </div>
 
-<!-- MULTI -->
 <div class="section" id="multi">
   <div class="inputs">
     <div class="input-group" style="grid-column:1/-1;">
-      <label>Egg Type</label>
-      <select id="eggSelect"></select>
+      <label>Egg</label><select id="eggSelect"></select>
     </div>
-    <div class="input-group">
-      <label>Your Luck</label>
-      <input id="multiYourLuck" type="number" value="1">
-    </div>
-    <div class="input-group">
-      <label>Event Luck</label>
-      <input id="multiEventLuck" type="number" value="1">
-    </div>
+    <div class="input-group"><label>Your Luck</label><input id="multiYourLuck" value="1"></div>
+    <div class="input-group"><label>Event Luck</label><input id="multiEventLuck" value="1"></div>
   </div>
   <button id="multiCalcBtn">Calculate</button>
   <pre id="multiOutput"></pre>
 </div>
 
-<!-- SIM -->
 <div class="section" id="sim">
   <div class="inputs">
-    <div class="input-group">
-      <label>Egg Type</label>
-      <select id="simEggSelect"></select>
-    </div>
-    <div class="input-group">
-      <label>Your Luck</label>
-      <input id="simYourLuck" type="number" value="1">
-    </div>
-    <div class="input-group">
-      <label>Event Luck</label>
-      <input id="simEventLuck" type="number" value="1">
-    </div>
-    <div class="input-group">
-      <label>Eggs Hatched</label>
-      <input id="simBatches" type="number" value="100">
-    </div>
+    <div class="input-group"><label>Egg</label><select id="simEggSelect"></select></div>
+    <div class="input-group"><label>Your Luck</label><input id="simYourLuck" value="1"></div>
+    <div class="input-group"><label>Event Luck</label><input id="simEventLuck" value="1"></div>
+    <div class="input-group"><label>Eggs</label><input id="simBatches" value="100"></div>
   </div>
   <button id="simBtn">Simulate</button>
   <pre id="simOutput"></pre>
@@ -140,12 +97,17 @@ pre {
 </div>
 
 <script>
-// GLOBAL SETTINGS
-const GLOBAL_SETTINGS = {
-  globalEventLuck: 1
-};
+// ================== ANNOUNCEMENT ==================
+const ANNOUNCEMENT_TEXT = "🔥 New Eggs Added! Magic Egg & Fire Ring Egg are now available.";
+const ANNOUNCEMENT_ENABLED = true;
 
-// TABS
+if(ANNOUNCEMENT_ENABLED){
+  announcementBox.textContent = ANNOUNCEMENT_TEXT;
+} else {
+  announcementBox.style.display = "none";
+}
+
+// ================== TABS ==================
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.onclick=()=>{
     document.querySelectorAll('.tab,.section').forEach(e=>e.classList.remove('active'));
@@ -154,48 +116,46 @@ document.querySelectorAll('.tab').forEach(tab=>{
   };
 });
 
-// PARSE RARITY
-function parseRarity(input){
-  input=input.toLowerCase().replace(/,/g,'');
-  if(input.includes('/')) return Number(input.split('/')[1]);
-  if(input.endsWith('%')) return Math.round(1/(Number(input.replace('%',''))/100));
-  if(input.endsWith('k')) return Number(input.replace('k',''))*1000;
-  if(input.endsWith('m')) return Number(input.replace('m',''))*1e6;
-  return Number(input);
-}
-
-// EGG DATA (easy to extend)
+// ================== DATA ==================
 const eggsData = {
   "Basic":[
-    {name:"Dragon",chance:100,rarity:"Legendary"},
-    {name:"Royal Blob",chance:100000,rarity:"Secret"}
+    {name:"Dragon",chance:100},
+    {name:"Royal Blob",chance:100000}
   ],
   "Shark":[
-    {name:"Shark",chance:100,rarity:"Legendary"}
+    {name:"Shark",chance:100}
   ],
   "Glacier":[
-    {name:"Yeti",chance:52.63,rarity:"Legendary"},
-    {name:"Frost Dragon",chance:1000,rarity:"Mythic"}
+    {name:"Yeti",chance:52.63},
+    {name:"Frost Dragon",chance:1000}
   ],
   "Mystic":[
-    {name:"Taurus",chance:52.63,rarity:"Legendary"},
-    {name:"Goblin",chance:1000,rarity:"Mythic"},
-    {name:"Mystic Hexo",chance:100000,rarity:"Secret"}
+    {name:"Taurus",chance:52.63},
+    {name:"Goblin",chance:1000},
+    {name:"Mystic Hexo",chance:100000}
   ],
   "Crystal":[
-    {name:"Dominus",chance:1000,rarity:"Mythic"},
-    {name:"Flying Gem",chance:100000,rarity:"Secret"}
+    {name:"Dominus",chance:1000},
+    {name:"Flying Gem",chance:100000}
   ],
   "Blossom":[
-    {name:"Blossom Dominus",chance:1000,rarity:"Mythic"},
-    {name:"Flower Trophy",chance:100000,rarity:"Secret"},
-    {name:"Eternal Flower",chance:500000,rarity:"Secret"}
+    {name:"Blossom Dominus",chance:1000},
+    {name:"Flower Trophy",chance:100000},
+    {name:"Eternal Flower",chance:500000}
+  ],
+  "Magic":[
+    {name:"Clown",chance:25000}
+  ],
+  "Fire Ring":[
+    {name:"Festival Bunny",chance:100},
+    {name:"Festival Dragon",chance:1000},
+    {name:"Fire Ring Lion",chance:100000},
+    {name:"Ultra Dice",chance:500000}
   ]
 };
 
-// POPULATE SELECTS
-const selects=[eggSelect,simEggSelect];
-selects.forEach(sel=>{
+// ================== POPULATE ==================
+[eggSelect, simEggSelect].forEach(sel=>{
   Object.keys(eggsData).forEach(e=>{
     let o=document.createElement('option');
     o.value=o.textContent=e;
@@ -203,27 +163,16 @@ selects.forEach(sel=>{
   });
 });
 
-// SINGLE
-calcBtn.onclick=()=>{
-  const base=parseRarity(baseRarity.value);
-  const totalLuck=(+yourLuck.value||1)*(+eventLuck.value||1)*(+adminLuck.value||1);
-  const batches=Math.round(base/totalLuck/(+eggsBatch.value||1));
-  output.textContent=
-`Total Luck: ${totalLuck}x
-Chance: 1/${Math.round(base/totalLuck).toLocaleString()}
-Batches Needed: ${batches}`;
-};
-
-// MULTI
+// ================== MULTI ==================
 multiCalcBtn.onclick=()=>{
   let egg=eggSelect.value;
   let luck=(+multiYourLuck.value||1)*(+multiEventLuck.value||1);
-  multiOutput.textContent=eggsData[egg].map(p=>
-    `${p.name} (${p.rarity}): 1/${Math.round(p.chance/luck).toLocaleString()}`
-  ).join('\n');
+  multiOutput.textContent=eggsData[egg]
+    .map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`)
+    .join('\n');
 };
 
-// SIM
+// ================== SIM ==================
 simBtn.onclick=()=>{
   let egg=simEggSelect.value;
   let luck=(+simYourLuck.value||1)*(+simEventLuck.value||1);
@@ -232,10 +181,8 @@ simBtn.onclick=()=>{
   eggsData[egg].forEach(p=>results[p.name]=0);
 
   for(let i=0;i<rolls;i++){
-    let r=Math.random(), sum=0;
     for(const p of eggsData[egg]){
-      sum+=luck/p.chance;
-      if(r<sum){results[p.name]++;break;}
+      if(Math.random()<luck/p.chance){results[p.name]++;break;}
     }
   }
 
