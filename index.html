@@ -3,58 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <title>Secret Pet Hatch Calculator</title>
+
 <style>
-body {
-  background:#0f1220;
+body{
+  background:#0e1024;
   color:#fff;
-  font-family:Arial, sans-serif;
-  max-width:900px;
+  font-family:Arial,sans-serif;
+  max-width:800px;
   margin:auto;
   padding:20px;
 }
-h1,h2 {
-  text-align:center;
-}
-.box {
-  background:#1b1f3b;
-  border-radius:12px;
-  padding:16px;
+h1{text-align:center;}
+.menu{
+  display:flex;
+  gap:10px;
+  justify-content:center;
   margin-bottom:20px;
 }
-label {
-  display:block;
-  margin-top:10px;
-  font-size:14px;
+.menu button{
+  flex:1;
+  background:#2b2f66;
+  color:white;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
 }
-input, select, button {
+.menu button.active{background:#5d6bff;}
+.section{
+  display:none;
+  background:#1a1e44;
+  padding:16px;
+  border-radius:12px;
+}
+label{display:block;margin-top:10px;font-size:14px;}
+input,select{
   width:100%;
   padding:8px;
   margin-top:4px;
   border-radius:6px;
   border:none;
 }
-button {
+button.action{
+  width:100%;
+  margin-top:14px;
+  padding:10px;
   background:#5d6bff;
   color:white;
-  font-weight:bold;
+  border:none;
+  border-radius:8px;
   cursor:pointer;
-  margin-top:12px;
 }
-button:hover { background:#7885ff; }
-.small {
-  font-size:13px;
-  opacity:0.85;
-}
-.result-line { margin:6px 0; }
-.owner {
+.owner{
   background:#2a2f66;
   border-left:6px solid #5d6bff;
+  padding:10px;
+  margin-bottom:16px;
+  border-radius:8px;
 }
-.footer {
+.footer{
   text-align:center;
-  opacity:0.6;
   margin-top:30px;
+  opacity:0.6;
 }
+.result{margin-top:10px;font-size:14px;}
 </style>
 </head>
 
@@ -62,18 +75,23 @@ button:hover { background:#7885ff; }
 
 <h1>🐣 Secret Pet Hatch Calculator</h1>
 
-<div id="ownerBox" class="box owner" style="display:none;">
-  <b>📢 Owner Message:</b>
-  <div id="ownerText"></div>
+<div id="ownerBox" class="owner" style="display:none;">
+<b>📢 Owner Message:</b>
+<div id="ownerText"></div>
 </div>
 
-<div class="box">
-<h2>⚙️ Inputs</h2>
+<div class="menu">
+  <button class="active" onclick="showSection('calc')">Calculator</button>
+  <button onclick="showSection('eggs')">Egg Odds</button>
+  <button onclick="showSection('sim')">Simulator</button>
+</div>
 
+<!-- CALCULATOR -->
+<div id="calc" class="section" style="display:block;">
 <label>Egg</label>
 <select id="eggSelect"></select>
 
-<label>Your Luck (potions + gamepasses)</label>
+<label>Your Luck</label>
 <input id="luck" placeholder="Ex: 22.8">
 
 <label>Event Luck</label>
@@ -88,159 +106,111 @@ button:hover { background:#7885ff; }
 <label>Hatch Speed Multiplier</label>
 <input id="hatchSpeed" value="1">
 
-<button onclick="calculate()">Calculate</button>
-<button onclick="simulate()">Simulate 100 Hatches</button>
+<button class="action" onclick="calculate()">Calculate</button>
+<div id="calcResult" class="result"></div>
 </div>
 
-<div class="box">
-<h2>📊 Results</h2>
-<div id="results"></div>
+<!-- EGG ODDS -->
+<div id="eggs" class="section">
+<div id="eggOdds"></div>
 </div>
 
-<div class="box">
-<h2>🧪 Simulation</h2>
-<div id="simResults"></div>
+<!-- SIMULATOR -->
+<div id="sim" class="section">
+<button class="action" onclick="simulate()">Simulate 100 Hatches</button>
+<div id="simResult" class="result"></div>
 </div>
 
 <div class="footer">By: iQovz</div>
 
 <script>
-/* =========================
-   OWNER MESSAGE (EDIT ME)
-========================= */
-const OWNER_MESSAGE = "🔥 2x Luck Event Live! Fire Ring Egg boosted!";
-
-/* =========================
-   LUCK TIERS (EDITABLE)
-========================= */
-const LUCK_TIERS = [
-  { min: 0, label: "😴 Unlucky" },
-  { min: 5, label: "🙂 Average" },
-  { min: 15, label: "🔥 Juiced" },
-  { min: 30, label: "💀 Insane" },
-  { min: 75, label: "👑 Admin Level" }
-];
-
-/* =========================
-   EGGS CONFIG (MAIN EDIT ZONE)
-========================= */
-const EGGS = {
-  "Basic Egg": {
-    pets: [
-      { name:"Dragon", rarity:"Legendary", chance:100 },
-      { name:"Royal Blob", rarity:"Secret", chance:100000 }
-    ]
-  },
-  "Shark Egg": {
-    pets:[{ name:"Shark", rarity:"Legendary", chance:100 }]
-  },
-  "Glacier Egg": {
-    pets:[
-      { name:"Yeti", rarity:"Legendary", chance:52.63 },
-      { name:"Frost Dragon", rarity:"Mythic", chance:1000 }
-    ]
-  },
-  "Mystic Egg": {
-    pets:[
-      { name:"Taurus", rarity:"Legendary", chance:52.63 },
-      { name:"Goblin", rarity:"Mythic", chance:1000 },
-      { name:"Mystic Hexo", rarity:"Secret", chance:100000 }
-    ]
-  },
-  "Crystal Egg": {
-    pets:[
-      { name:"Dominus", rarity:"Mythic", chance:1000 },
-      { name:"Flying Gem", rarity:"Secret", chance:100000 }
-    ]
-  },
-  "Blossom Egg": {
-    pets:[
-      { name:"Blossom Dominus", rarity:"Mythic", chance:1000 },
-      { name:"Flower Trophy", rarity:"Secret", chance:100000 },
-      { name:"Eternal Flower", rarity:"Secret", chance:500000 }
-    ]
-  },
-  "Magic Egg": {
-    pets:[{ name:"Clown", rarity:"Secret", chance:25000 }]
-  },
-  "Fire Ring Egg": {
-    pets:[
-      { name:"Festival Bunny", rarity:"Legendary", chance:100 },
-      { name:"Festival Dragon", rarity:"Mythic", chance:1000 },
-      { name:"Fire Ring Lion", rarity:"Secret", chance:100000 },
-      { name:"Ultra Dice", rarity:"Secret", chance:500000 }
-    ]
-  }
+/* ========= EDIT ZONES ========= */
+const OWNER_MESSAGE="🔥 Fire Ring Egg event live!";
+const EGGS={
+  "Basic Egg":{pets:[
+    {name:"Dragon",rarity:"Legendary",chance:100},
+    {name:"Royal Blob",rarity:"Secret",chance:100000}
+  ]},
+  "Fire Ring Egg":{pets:[
+    {name:"Festival Bunny",rarity:"Legendary",chance:100},
+    {name:"Festival Dragon",rarity:"Mythic",chance:1000},
+    {name:"Fire Ring Lion",rarity:"Secret",chance:100000},
+    {name:"Ultra Dice",rarity:"Secret",chance:500000}
+  ]}
 };
+/* ============================== */
 
-/* =========================
-   SETUP
-========================= */
-const eggSelect = document.getElementById("eggSelect");
-Object.keys(EGGS).forEach(e => {
-  const o = document.createElement("option");
-  o.value = e; o.textContent = e;
+const eggSelect=document.getElementById("eggSelect");
+Object.keys(EGGS).forEach(e=>{
+  let o=document.createElement("option");
+  o.value=e;o.textContent=e;
   eggSelect.appendChild(o);
 });
 
-if (OWNER_MESSAGE) {
-  document.getElementById("ownerBox").style.display="block";
-  document.getElementById("ownerText").textContent = OWNER_MESSAGE;
+if(OWNER_MESSAGE){
+  ownerBox.style.display="block";
+  ownerText.textContent=OWNER_MESSAGE;
 }
 
-function getLuckTier(luck) {
-  let tier = LUCK_TIERS[0].label;
-  LUCK_TIERS.forEach(t => { if (luck >= t.min) tier = t.label; });
-  return tier;
+function showSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).style.display="block";
+  event.target.classList.add("active");
+  if(id==="eggs") renderEggOdds();
 }
 
-/* =========================
-   CALCULATE
-========================= */
-function calculate() {
-  const egg = EGGS[eggSelect.value];
-  const luck = (+luck.value||1) + (+eventLuck.value||0) + (+adminLuck.value||0);
-  const eggsPer = +eggsPer.value||1;
-  const hatchSpeed = +hatchSpeed.value||1;
-  const batchTime = 2.57 / hatchSpeed;
-
-  let bestSecret = egg.pets.filter(p=>p.rarity==="Secret")[0];
-  let adjChance = bestSecret.chance / luck;
-  let batches = adjChance / eggsPer;
-  let timeMin = (batches * batchTime) / 60;
-
-  document.getElementById("results").innerHTML = `
-    <div class="result-line">Your Current Luck: ${luck.toFixed(2)}x</div>
-    <div class="result-line">Luck Tier: ${getLuckTier(luck)}</div>
-    <div class="result-line">Chances: 1/${Math.round(adjChance).toLocaleString()}</div>
-    <div class="result-line">Adjusted Hatch Time per Batch: ${batchTime.toFixed(2)}s</div>
-    <div class="result-line">Time to Hatch: ~${timeMin.toFixed(2)} minutes</div>
-  `;
+function totalLuck(){
+  return (+luck.value||0)+(+eventLuck.value||0)+(+adminLuck.value||0)||1;
 }
 
-/* =========================
-   SIMULATOR
-========================= */
-function simulate() {
-  const egg = EGGS[eggSelect.value];
-  let results={Legendary:0,Mythic:0,Secret:0};
+function calculate(){
+  const egg=EGGS[eggSelect.value];
+  const secret=egg.pets.find(p=>p.rarity==="Secret");
+  const l=totalLuck();
+  const batchTime=2.57/(+hatchSpeed.value||1);
+  const adj=secret.chance/l;
+  const batches=adj/(+eggsPer.value||1);
+  const time=(batches*batchTime)/60;
+
+  calcResult.innerHTML=`
+Your Current Luck: ${l.toFixed(2)}x<br>
+Chances: 1/${Math.round(adj).toLocaleString()}<br>
+Adjusted Hatch Time per Batch: ${batchTime.toFixed(2)}s<br>
+Time to Hatch: ~${time.toFixed(2)} minutes
+`;
+}
+
+function renderEggOdds(){
+  let html="";
+  Object.entries(EGGS).forEach(([egg,data])=>{
+    html+=`<b>${egg}</b><br>`;
+    data.pets.forEach(p=>{
+      html+=`${p.name} (${p.rarity}) – 1/${p.chance.toLocaleString()}<br>`;
+    });
+    html+="<br>";
+  });
+  eggOdds.innerHTML=html;
+}
+
+function simulate(){
+  const egg=EGGS[eggSelect.value];
+  let counts={Legendary:0,Mythic:0,Secret:0};
   let rarest=null;
-
   for(let i=0;i<100;i++){
     egg.pets.forEach(p=>{
-      if(Math.random() < 1/p.chance){
-        results[p.rarity]++;
-        if(!rarest || p.chance>rarest.chance) rarest=p;
+      if(Math.random()<1/p.chance){
+        counts[p.rarity]++;
+        if(!rarest||p.chance>rarest.chance) rarest=p;
       }
     });
   }
-
-  document.getElementById("simResults").innerHTML = `
-    Legendary: ${results.Legendary}<br>
-    Mythic: ${results.Mythic}<br>
-    Secret: ${results.Secret}<br>
-    Rarest Pet: ${rarest ? rarest.name : "None"}
-  `;
+  simResult.innerHTML=`
+Legendary: ${counts.Legendary}<br>
+Mythic: ${counts.Mythic}<br>
+Secret: ${counts.Secret}<br>
+Rarest Pet: ${rarest?rarest.name:"None"}
+`;
 }
 </script>
 
