@@ -2,43 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Secret Pet Hatch Calculator - Full Version</title>
+<title>Ultimate Secret Pet Hatch Calculator</title>
 <style>
 body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;display:flex;justify-content:center;padding:20px;transition:background 0.3s,color 0.3s;}
 body.light {background:#f0f0f5;color:#111;}
-.container {width:100%;max-width:700px;}
+.container {width:100%;max-width:750px;}
 .announcement {background:#1f2937;border:1px solid #00aaff;color:#cfefff;padding:10px;border-radius:10px;text-align:center;margin-bottom:15px;font-size:14px;}
+body.light .announcement {background:#d0e8ff;color:#111;border:1px solid #00aaff;}
 .tabs {display:flex;justify-content:space-around;margin-bottom:15px;}
 .tab {cursor:pointer;padding:10px 15px;border-radius:8px;background:#1c1c26;transition:0.2s;}
+body.light .tab {background:#d0d4e0;color:#111;}
 .tab.active {background:#00aaff;font-weight:bold;color:#fff;}
+body.light .tab.active {background:#0066cc;color:#fff;}
 .section {display:none;background:#1c1c26;padding:20px;border-radius:12px;}
+body.light .section {background:#e0e0e8;color:#111;}
 .section.active {display:block;}
 .inputs {display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:15px;}
 .input-group {display:flex;flex-direction:column;}
 .input-group label {font-size:13px;margin-bottom:3px;}
 .input-group input, select {padding:6px;font-size:14px;border-radius:5px;border:1px solid #333;background:#0f0f14;color:#eaeaea;}
+body.light .input-group input, body.light .input-group select {background:#fff;color:#111;border:1px solid #aaa;}
 .input-group input:focus {background:#1a1a28;outline:none;}
+body.light .input-group input:focus {background:#eef0f5;}
 button {padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(90deg,#00aaff,#0066cc);color:#fff;font-weight:bold;margin-top:5px;transition:0.2s;}
+body.light button {background:linear-gradient(90deg,#0066cc,#00aaff);}
 button:hover {background:linear-gradient(90deg,#00ccff,#004c99);}
-pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;}
+pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;color:#fff;}
+body.light pre {background:#f5f5f5;color:#111;border:1px solid #aaa;}
 .info {position:relative;cursor:pointer;color:#00aaff;margin-left:4px;font-weight:bold;}
 .tooltip {visibility:hidden;width:280px;background:#333;color:#fff;text-align:left;border-radius:6px;padding:8px;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-140px;opacity:0;transition:0.3s;font-size:12px;}
+body.light .tooltip {background:#111;color:#fff;}
 .info:hover .tooltip {visibility:visible;opacity:1;}
 .feedback {text-align:center;margin-top:5px;}
 .feedback a {color:#00aaff;text-decoration:none;font-size:13px;}
 .signature {text-align:center;font-size:12px;margin-top:10px;color:#888;}
 .progress-container {position:relative;height:18px;background:#1c1c26;border-radius:8px;margin:3px 0 8px 0;overflow:hidden;}
-.progress-bar {height:100%;border-radius:8px;transition:width 0.3s;}
-.progress-bar.expected {position:absolute;top:0;left:0;height:100%;border-radius:8px;opacity:0.5;}
+body.light .progress-container {background:#d0d0d8;}
+.progress-bar {height:100%;border-radius:8px;transition:width 0.2s;}
+.progress-bar.expected {position:absolute;top:0;left:0;height:100%;border-radius:8px;opacity:0.5;background-color:#ffaa00;}
+.mini-icon {margin-right:5px;}
+.fast-mode {grid-column:1/-1;}
 @media(max-width:600px){.inputs{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="announcement" id="announcementBox"></div>
+
 <div style="text-align:center;margin-bottom:10px;">
 <button id="toggleTheme">🌙 Toggle Light/Dark Mode</button>
 </div>
+
 <div class="tabs">
   <div class="tab active" data-tab="single">Single Pet Calculator</div>
   <div class="tab" data-tab="multi">Multi-Egg Odds</div>
@@ -49,27 +64,27 @@ pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padd
 <div class="section active" id="single">
   <div class="inputs">
     <div class="input-group">
-      <label>Base Rarity 🐣 <span class="info">ℹ<small class="tooltip">Chances of the pet</small></span></label>
-      <input id="baseRarity" placeholder="1/25k, 25k, 0.0002%">
+      <label>Base Rarity 🐣 <span class="info">ℹ<small class="tooltip">Supports 1/25k, 0.0002%, or "x x x" multiplier</small></span></label>
+      <input id="baseRarity" placeholder="1/25k, 25k, 0.0002% or '1 2 3'">
     </div>
     <div class="input-group">
-      <label>Your Luck 🍀 <span class="info">ℹ<small class="tooltip">Add up all your boosts. Don't multiply. Add gamepasses/purchasable luck. Event luck does not count.</small></span></label>
+      <label>Your Luck 🍀 <span class="info">ℹ<small class="tooltip">Add all boosts (not event luck)</small></span></label>
       <input id="yourLuck" placeholder="Add all potions, gamepass, purchasable luck">
     </div>
     <div class="input-group">
-      <label>Event Luck 🎉 <span class="info">ℹ<small class="tooltip">If there is an ongoing luck event, type it here. Otherwise type 1.</small></span></label>
+      <label>Event Luck 🎉 <span class="info">ℹ<small class="tooltip">Ongoing event multiplier. Type 1 if none</small></span></label>
       <input id="eventLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Admin Abuse Luck 🛠️ <span class="info">ℹ<small class="tooltip">Luck on the Admin Abuse egg type.</small></span></label>
+      <label>Admin Abuse Luck 🛠️ <span class="info">ℹ<small class="tooltip">Admin Abuse egg multiplier</small></span></label>
       <input id="adminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Eggs per Batch 🥚 <span class="info">ℹ<small class="tooltip">Number of eggs per batch.</small></span></label>
+      <label>Eggs per Batch 🥚 <span class="info">ℹ<small class="tooltip">Number of eggs per batch</small></span></label>
       <input id="eggsBatch" type="number" placeholder="Number of eggs per batch">
     </div>
     <div class="input-group">
-      <label>Hatch Speed ⏱️ <span class="info">ℹ<small class="tooltip">Normal hatch speed is 2.57 seconds per egg.</small></span></label>
+      <label>Hatch Speed ⏱️ <span class="info">ℹ<small class="tooltip">Normal hatch speed 2.57s per egg</small></span></label>
       <input id="hatchSpeed" type="number" value="2.57">
     </div>
   </div>
@@ -119,8 +134,11 @@ pre {margin-top:10px;white-space:pre-wrap;font-size:14px;background:#0f0f14;padd
       <input id="simAdminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Batches to Simulate 🐣 <span class="info">ℹ<small class="tooltip">How many batches to simulate. Ex: 1000.</small></span></label>
+      <label>Batches to Simulate 🐣</label>
       <input id="simBatches" type="number" value="100">
+    </div>
+    <div class="input-group fast-mode">
+      <label><input type="checkbox" id="fastMode"> Fast Hatch Mode</label>
     </div>
   </div>
   <button id="simBtn">Simulate Hatches</button>
@@ -153,7 +171,11 @@ document.querySelectorAll('.tab').forEach(tab=>{
 // ================== HELPER ==================
 function parseRarity(input){
   if(!input) return null;
-  input = input.toLowerCase().replace(/,/g,'').trim();
+  input=input.toLowerCase().replace(/,/g,'').trim();
+  if(input.includes(' ')){
+    let parts=input.split(' ').map(Number);
+    if(parts.length===3) return Math.round(25000/parts[0]*parts[1]*parts[2]);
+  }
   if(input.endsWith('%')) return Math.round(1/(Number(input.replace('%',''))/100));
   if(input.includes('/')){
     let denom = input.split('/')[1];
@@ -163,7 +185,7 @@ function parseRarity(input){
   }
   if(input.endsWith('k')) return Number(input.replace('k',''))*1000;
   if(input.endsWith('m')) return Number(input.replace('m',''))*1_000_000;
-  let val = Number(input);
+  let val=Number(input);
   if(val>0 && val<1) return Math.round(1/val);
   return val;
 }
@@ -223,51 +245,61 @@ document.getElementById('multiCalcBtn').onclick=()=>{
 };
 document.getElementById('multiCopyBtn').onclick=()=>{navigator.clipboard.writeText(document.getElementById('multiOutput').textContent).then(()=>alert('Copied!'));};
 
-// ================== SIMULATOR (progress bars + actual vs expected) ==================
-document.getElementById('simBtn').onclick = () => {
-  const egg = document.getElementById('simEggSelect').value;
-  const luck = (+document.getElementById('simYourLuck').value||1)*
-               (+document.getElementById('simEventLuck').value||1)*
-               (+document.getElementById('simAdminLuck').value||1);
-  const batches = +document.getElementById('simBatches').value||100;
-  const container = document.getElementById('simOutput'); 
-  container.innerHTML = '';
+// ================== SIMULATOR WITH FAST MODE ==================
+document.getElementById('simBtn').onclick = async () => {
+  const egg=document.getElementById('simEggSelect').value;
+  const luck=(+document.getElementById('simYourLuck').value||1)*
+             (+document.getElementById('simEventLuck').value||1)*
+             (+document.getElementById('simAdminLuck').value||1);
+  const batches=+document.getElementById('simBatches').value||100;
+  const fast=document.getElementById('fastMode').checked;
+  const container=document.getElementById('simOutput'); 
+  container.innerHTML='';
 
-  const results = {}; 
-  eggsData[egg].forEach(p => results[p.name] = 0);
+  const results={}; 
+  eggsData[egg].forEach(p=>results[p.name]=0);
+  const expected={};
+  eggsData[egg].forEach(p=>expected[p.name]=Math.round(batches/(p.chance/luck)));
 
-  for(let i=0;i<batches;i++){
-    eggsData[egg].forEach(p => {if(Math.random()<luck/p.chance) results[p.name]++;});
+  const render=()=>{
+    container.innerHTML='';
+    eggsData[egg].forEach(p=>{
+      const count=results[p.name];
+      const label=document.createElement('div');
+      label.textContent=`${p.name}: ${count} / Expected: ${expected[p.name]}`;
+      container.appendChild(label);
+
+      const barCont=document.createElement('div'); barCont.className='progress-container';
+      const bar=document.createElement('div'); bar.className='progress-bar';
+      bar.style.backgroundColor=p.chance<=100?'#ff5555':p.chance<=1000?'#55aaff':'#55ff55';
+      bar.style.width=Math.max(2,(count/batches)*100)+'%';
+      barCont.appendChild(bar);
+
+      const expBar=document.createElement('div'); expBar.className='progress-bar expected';
+      expBar.style.width=Math.max(2,(expected[p.name]/batches)*100)+'%';
+      expBar.style.backgroundColor='#ffaa00';
+      barCont.appendChild(expBar);
+
+      container.appendChild(barCont);
+    });
+  };
+
+  if(fast){
+    for(let i=0;i<batches;i++){
+      eggsData[egg].forEach(p=>{if(Math.random()<(1/(p.chance/luck))) results[p.name]++;});
+    }
+    render();
+  }else{
+    for(let i=0;i<batches;i++){
+      eggsData[egg].forEach(p=>{if(Math.random()<(1/(p.chance/luck))) results[p.name]++;});
+      render();
+      await new Promise(r=>setTimeout(r,10)); // small delay for animation
+    }
   }
-
-  const maxResult = Math.max(...Object.values(results));
-
-  Object.entries(results).forEach(([name,count])=>{
-    const petData=eggsData[egg].find(p=>p.name===name);
-
-    const label = document.createElement('div'); 
-    label.textContent = `${name}: ${count} / Expected: 1/${Math.round(petData.chance/luck).toLocaleString()}`;
-    container.appendChild(label);
-
-    const barContainer = document.createElement('div'); 
-    barContainer.className='progress-container';
-
-    const bar=document.createElement('div'); 
-    bar.className='progress-bar';
-    bar.style.backgroundColor=petData.chance<=100?'#ff5555':petData.chance<=1000?'#55aaff':'#55ff55';
-    bar.style.width=Math.max(2,(count/maxResult)*100)+'%';
-    barContainer.appendChild(bar);
-
-    const expectedBar=document.createElement('div');
-    expectedBar.className='progress-bar expected';
-    expectedBar.style.width=Math.max(2,(batches/(petData.chance/luck))*100)+'%';
-    expectedBar.style.backgroundColor='#ffaa00';
-    barContainer.appendChild(expectedBar);
-
-    container.appendChild(barContainer);
-  });
 };
 document.getElementById('simCopyBtn').onclick=()=>{navigator.clipboard.writeText(document.getElementById('simOutput').textContent).then(()=>alert('Copied!'));};
+
 </script>
 </body>
-</html>
+</
+
