@@ -31,6 +31,7 @@ body {margin:0;font-family:Arial,sans-serif;background:#0f0f14;color:#eaeaea;dis
 button {
   padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;
   background:linear-gradient(90deg,#00aaff,#0066cc);color:#fff;font-weight:bold;
+  margin-top:5px;
 }
 pre {
   margin-top:10px;white-space:pre-wrap;font-size:14px;
@@ -54,38 +55,86 @@ pre {
   <div class="tab" data-tab="sim">Hatch Simulator</div>
 </div>
 
+<!-- SINGLE -->
 <div class="section active" id="single">
   <div class="inputs">
-    <div class="input-group"><label>Base Rarity</label><input id="baseRarity"></div>
-    <div class="input-group"><label>Your Luck</label><input id="yourLuck"></div>
-    <div class="input-group"><label>Event Luck</label><input id="eventLuck" value="1"></div>
-    <div class="input-group"><label>Admin Luck</label><input id="adminLuck" value="1"></div>
-    <div class="input-group"><label>Eggs per Batch</label><input id="eggsBatch"></div>
+    <div class="input-group">
+      <label>Base Rarity 🐣</label>
+      <input id="baseRarity" placeholder="1/25k, 25k, 0.0002%">
+    </div>
+    <div class="input-group">
+      <label>Your Luck 🍀</label>
+      <input id="yourLuck" placeholder="Add all potions, gamepass, purchasable luck">
+    </div>
+    <div class="input-group">
+      <label>Event Luck 🎉</label>
+      <input id="eventLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Admin Abuse Luck 🛠️</label>
+      <input id="adminLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Eggs per Batch 🥚</label>
+      <input id="eggsBatch" type="number" placeholder="Number of eggs per batch">
+    </div>
+    <div class="input-group">
+      <label>Hatch Speed (seconds) ⏱️</label>
+      <input id="hatchSpeed" type="number" value="2.57">
+    </div>
   </div>
   <button id="calcBtn">Calculate</button>
+  <button id="copyBtn">📋 Copy Output</button>
   <pre id="output"></pre>
 </div>
 
+<!-- MULTI-EGG ODDS -->
 <div class="section" id="multi">
   <div class="inputs">
     <div class="input-group" style="grid-column:1/-1;">
-      <label>Egg</label><select id="eggSelect"></select>
+      <label>Egg Type 🥚</label>
+      <select id="eggSelect"></select>
     </div>
-    <div class="input-group"><label>Your Luck</label><input id="multiYourLuck" value="1"></div>
-    <div class="input-group"><label>Event Luck</label><input id="multiEventLuck" value="1"></div>
+    <div class="input-group">
+      <label>Your Luck 🍀</label>
+      <input id="multiYourLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Event Luck 🎉</label>
+      <input id="multiEventLuck" type="number" value="1">
+    </div>
   </div>
-  <button id="multiCalcBtn">Calculate</button>
+  <button id="multiCalcBtn">Calculate Multi-Odds</button>
+  <button id="multiCopyBtn">📋 Copy Output</button>
   <pre id="multiOutput"></pre>
 </div>
 
+<!-- HATCH SIMULATOR -->
 <div class="section" id="sim">
   <div class="inputs">
-    <div class="input-group"><label>Egg</label><select id="simEggSelect"></select></div>
-    <div class="input-group"><label>Your Luck</label><input id="simYourLuck" value="1"></div>
-    <div class="input-group"><label>Event Luck</label><input id="simEventLuck" value="1"></div>
-    <div class="input-group"><label>Eggs</label><input id="simBatches" value="100"></div>
+    <div class="input-group">
+      <label>Egg Type 🥚</label>
+      <select id="simEggSelect"></select>
+    </div>
+    <div class="input-group">
+      <label>Your Luck 🍀</label>
+      <input id="simYourLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Event Luck 🎉</label>
+      <input id="simEventLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Admin Abuse Luck 🛠️</label>
+      <input id="simAdminLuck" type="number" value="1">
+    </div>
+    <div class="input-group">
+      <label>Batches to Simulate 🐣</label>
+      <input id="simBatches" type="number" value="100">
+    </div>
   </div>
-  <button id="simBtn">Simulate</button>
+  <button id="simBtn">Simulate Hatches</button>
+  <button id="simCopyBtn">📋 Copy Output</button>
   <pre id="simOutput"></pre>
 </div>
 
@@ -98,9 +147,8 @@ pre {
 
 <script>
 // ================== ANNOUNCEMENT ==================
-const ANNOUNCEMENT_TEXT = "If you have any ideas for this website, go to the feedback menu and let me know. Also, hatch the Blossom egg, limited 1/500k secret pet being removed soon.";
+const ANNOUNCEMENT_TEXT = "🔥If you have any ideas for this website, go to the feedback menu and let me know. Also, hatch the Blossom egg, limited 1/500k secret pet being removed soon.";
 const ANNOUNCEMENT_ENABLED = true;
-
 if(ANNOUNCEMENT_ENABLED){
   announcementBox.textContent = ANNOUNCEMENT_TEXT;
 } else {
@@ -116,45 +164,37 @@ document.querySelectorAll('.tab').forEach(tab=>{
   };
 });
 
-// ================== DATA ==================
+// ================== HELPER ==================
+function parseRarity(input){
+  if(!input) return null;
+  input = input.toLowerCase().replace(/,/g,'').trim();
+  if(input.endsWith('%')) return Math.round(1/(Number(input.replace('%',''))/100));
+  if(input.includes('/')){
+    let denom = input.split('/')[1];
+    if(denom.endsWith('k')) return Number(denom.replace('k',''))*1000;
+    if(denom.endsWith('m')) return Number(denom.replace('m',''))*1_000_000;
+    return Number(denom);
+  }
+  if(input.endsWith('k')) return Number(input.replace('k',''))*1000;
+  if(input.endsWith('m')) return Number(input.replace('m',''))*1_000_000;
+  let val = Number(input);
+  if(val>0 && val<1) return Math.round(1/val);
+  return val;
+}
+
+// ================== EGG DATA ==================
 const eggsData = {
-  "Basic":[
-    {name:"Dragon",chance:100},
-    {name:"Royal Blob",chance:100000}
-  ],
-  "Shark":[
-    {name:"Shark",chance:100}
-  ],
-  "Glacier":[
-    {name:"Yeti",chance:52.63},
-    {name:"Frost Dragon",chance:1000}
-  ],
-  "Mystic":[
-    {name:"Taurus",chance:52.63},
-    {name:"Goblin",chance:1000},
-    {name:"Mystic Hexo",chance:100000}
-  ],
-  "Crystal":[
-    {name:"Dominus",chance:1000},
-    {name:"Flying Gem",chance:100000}
-  ],
-  "Blossom":[
-    {name:"Blossom Dominus",chance:1000},
-    {name:"Flower Trophy",chance:100000},
-    {name:"Eternal Flower",chance:500000}
-  ],
-  "Magic":[
-    {name:"Clown",chance:25000}
-  ],
-  "Fire Ring":[
-    {name:"Festival Bunny",chance:100},
-    {name:"Festival Dragon",chance:1000},
-    {name:"Fire Ring Lion",chance:100000},
-    {name:"Ultra Dice",chance:500000}
-  ]
+  "Basic":[{name:"Dragon",chance:100},{name:"Royal Blob",chance:100000}],
+  "Shark":[{name:"Shark",chance:100}],
+  "Glacier":[{name:"Yeti",chance:52.63},{name:"Frost Dragon",chance:1000}],
+  "Mystic":[{name:"Taurus",chance:52.63},{name:"Goblin",chance:1000},{name:"Mystic Hexo",chance:100000}],
+  "Crystal":[{name:"Dominus",chance:1000},{name:"Flying Gem",chance:100000}],
+  "Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}],
+  "Magic":[{name:"Clown",chance:25000}],
+  "Fire Ring":[{name:"Festival Bunny",chance:100},{name:"Festival Dragon",chance:1000},{name:"Fire Ring Lion",chance:100000},{name:"Ultra Dice",chance:500000}]
 };
 
-// ================== POPULATE ==================
+// ================== POPULATE SELECTS ==================
 [eggSelect, simEggSelect].forEach(sel=>{
   Object.keys(eggsData).forEach(e=>{
     let o=document.createElement('option');
@@ -163,33 +203,67 @@ const eggsData = {
   });
 });
 
-// ================== MULTI ==================
-multiCalcBtn.onclick=()=>{
-  let egg=eggSelect.value;
-  let luck=(+multiYourLuck.value||1)*(+multiEventLuck.value||1);
-  multiOutput.textContent=eggsData[egg]
-    .map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`)
-    .join('\n');
-};
+// ================== SINGLE CALCULATOR ==================
+calcBtn.onclick = () => {
+  const base = parseRarity(baseRarity.value);
+  const yourLuck = Number(yourLuck.value) || 1;
+  const eventLuck = Number(eventLuck.value) || 1;
+  const adminLuck = Number(adminLuck.value) || 1;
+  const eggs = Number(eggsBatch.value);
+  const hatchSpeedSec = Number(hatchSpeed.value) || 2.57;
 
-// ================== SIM ==================
-simBtn.onclick=()=>{
-  let egg=simEggSelect.value;
-  let luck=(+simYourLuck.value||1)*(+simEventLuck.value||1);
-  let rolls=+simBatches.value||100;
-  let results={};
-  eggsData[egg].forEach(p=>results[p.name]=0);
-
-  for(let i=0;i<rolls;i++){
-    for(const p of eggsData[egg]){
-      if(Math.random()<luck/p.chance){results[p.name]++;break;}
-    }
+  if(!base || !eggs){
+    output.textContent = "Please enter valid Base Rarity and Eggs per Batch.";
+    return;
   }
 
-  simOutput.textContent=`Simulated ${rolls} eggs:\n`+
+  const totalLuck = yourLuck*eventLuck*adminLuck;
+  const odds = base/totalLuck;
+  const batches = odds/eggs;
+  const totalTimeSec = batches*hatchSpeedSec;
+
+  let displayTime;
+  if(totalTimeSec<60) displayTime=totalTimeSec.toFixed(2)+' seconds';
+  else if(totalTimeSec<3600) displayTime=(totalTimeSec/60).toFixed(2)+' minutes';
+  else if(totalTimeSec<86400) displayTime=(totalTimeSec/3600).toFixed(2)+' hours';
+  else displayTime=(totalTimeSec/86400).toFixed(2)+' days';
+
+  output.textContent =
+`Your Current Luck: ${totalLuck.toFixed(2)}x
+Chances: 1/${Math.round(odds).toLocaleString()}
+Time to Hatch: ~${displayTime}
+Adjusted Hatch Time per Batch: ${hatchSpeedSec.toFixed(2)} seconds
+Total Hatches Needed: ${Math.round(batches).toLocaleString()}`;
+};
+
+// ================== COPY BUTTON ==================
+copyBtn.onclick = ()=>{navigator.clipboard.writeText(output.textContent).then(()=>alert('Copied!'));};
+
+// ================== MULTI-EGG ==================
+multiCalcBtn.onclick=()=>{
+  const egg=eggSelect.value;
+  const luck=(+multiYourLuck.value||1)*(+multiEventLuck.value||1);
+  multiOutput.textContent = eggsData[egg].map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`).join('\n');
+};
+multiCopyBtn.onclick=()=>{navigator.clipboard.writeText(multiOutput.textContent).then(()=>alert('Copied!'));};
+
+// ================== SIMULATOR ==================
+simBtn.onclick=()=>{
+  const egg=simEggSelect.value;
+  const luck=(+simYourLuck.value||1)*(+simEventLuck.value||1)*(+simAdminLuck.value||1);
+  const batches=+simBatches.value||100;
+  const results={};
+  eggsData[egg].forEach(p=>results[p.name]=0);
+  for(let i=0;i<batches;i++){
+    eggsData[egg].forEach(p=>{
+      if(Math.random()<luck/p.chance) results[p.name]++;
+    });
+  }
+  simOutput.textContent=`Simulated ${batches} batches for ${egg}:\n`+
     Object.entries(results).map(([k,v])=>`${k}: ${v}`).join('\n');
 };
+simCopyBtn.onclick=()=>{navigator.clipboard.writeText(simOutput.textContent).then(()=>alert('Copied!'));};
+
 </script>
 </body>
 </html>
-
