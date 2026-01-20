@@ -37,6 +37,9 @@ pre {
   margin-top:10px;white-space:pre-wrap;font-size:14px;
   background:#0f0f14;padding:10px;border-radius:5px;border:1px solid #333;
 }
+.info {position:relative;cursor:pointer;color:#00aaff;margin-left:4px;font-weight:bold;}
+.tooltip {visibility:hidden;width:280px;background:#333;color:#fff;text-align:left;border-radius:6px;padding:8px;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-140px;opacity:0;transition:0.3s;font-size:12px;}
+.info:hover .tooltip {visibility:visible;opacity:1;}
 .feedback {text-align:center;margin-top:5px;}
 .feedback a {color:#00aaff;text-decoration:none;font-size:13px;}
 .signature {text-align:center;font-size:12px;margin-top:10px;color:#888;}
@@ -55,31 +58,55 @@ pre {
   <div class="tab" data-tab="sim">Hatch Simulator</div>
 </div>
 
-<!-- SINGLE -->
+<!-- SINGLE PET CALCULATOR -->
 <div class="section active" id="single">
   <div class="inputs">
     <div class="input-group">
-      <label>Base Rarity 🐣</label>
+      <label>Base Rarity 🐣 
+        <span class="info">ℹ
+          <span class="tooltip">Chances of the pet</span>
+        </span>
+      </label>
       <input id="baseRarity" placeholder="1/25k, 25k, 0.0002%">
     </div>
     <div class="input-group">
-      <label>Your Luck 🍀</label>
+      <label>Your Luck 🍀 
+        <span class="info">ℹ
+          <span class="tooltip">Add up all of your boosts by hovering over them. Don't multiply them. Add all of them together. Don't forget gamepasses or purchasable ones around the map. Event luck doesn't count for this one.</span>
+        </span>
+      </label>
       <input id="yourLuck" placeholder="Add all potions, gamepass, purchasable luck">
     </div>
     <div class="input-group">
-      <label>Event Luck 🎉</label>
+      <label>Event Luck 🎉 
+        <span class="info">ℹ
+          <span class="tooltip">If there is a luck event ongoing, type in that # of luck into here. If there is none, type 1.</span>
+        </span>
+      </label>
       <input id="eventLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Admin Abuse Luck 🛠️</label>
+      <label>Admin Abuse Luck 🛠️ 
+        <span class="info">ℹ
+          <span class="tooltip">Whatever luck is on the Admin Abuse egg type here.</span>
+        </span>
+      </label>
       <input id="adminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Eggs per Batch 🥚</label>
+      <label>Eggs per Batch 🥚 
+        <span class="info">ℹ
+          <span class="tooltip">How many eggs you hatch every time you press 'T'.</span>
+        </span>
+      </label>
       <input id="eggsBatch" type="number" placeholder="Number of eggs per batch">
     </div>
     <div class="input-group">
-      <label>Hatch Speed (seconds) ⏱️</label>
+      <label>Hatch Speed ⏱️ 
+        <span class="info">ℹ
+          <span class="tooltip">The normal hatch speed is 2.57 seconds per egg.</span>
+        </span>
+      </label>
       <input id="hatchSpeed" type="number" value="2.57">
     </div>
   </div>
@@ -129,7 +156,11 @@ pre {
       <input id="simAdminLuck" type="number" value="1">
     </div>
     <div class="input-group">
-      <label>Batches to Simulate 🐣</label>
+      <label>Batches to Simulate 🐣
+        <span class="info">ℹ
+          <span class="tooltip">How many batches of eggs you want to simulate hatching in one session. Ex: 1000 batches.</span>
+        </span>
+      </label>
       <input id="simBatches" type="number" value="100">
     </div>
   </div>
@@ -236,8 +267,6 @@ Time to Hatch: ~${displayTime}
 Adjusted Hatch Time per Batch: ${hatchSpeedSec.toFixed(2)} seconds
 Total Hatches Needed: ${Math.round(batches).toLocaleString()}`;
 };
-
-// ================== COPY BUTTON ==================
 document.getElementById('copyBtn').onclick = ()=>{
   navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>alert('Copied!'));
 };
