@@ -68,7 +68,7 @@ body.light .version{color:#111;opacity:0.6;}
       <input id="baseRarity" placeholder="1/25k, 25k, 0.0002% or '1 2 3'">
     </div>
     <div class="input-group">
-      <label>Your Luck 🍀 <span class="info">ℹ<small class="tooltip">Add all luck multipliers from potions/upgrades. Do not include event luck here.</small></span></label>
+      <label>Your Luck 🍀</label>
       <input id="yourLuck" placeholder="Example: 1.5 + 2 + 3 = 6.5">
     </div>
     <div class="input-group"><label>Event Luck 🎉</label><input id="eventLuck" type="number" value="1"></div>
@@ -112,23 +112,13 @@ body.light .version{color:#111;opacity:0.6;}
 
 <div class="feedback"><a href="https://forms.gle/TbxWf1RvkZz3TZxo6" target="_blank">💬 Feedback</a></div>
 <div class="signature">By: iQovz</div>
-<div class="version">v3.6</div>
+<div class="version">v3.7</div>
 
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
 
 document.getElementById('announcementBox').textContent =
-"🔥New egg Jester egg was just added! 1/1M pet available now. GO HATCH IT! any feedback is appreciated, send it at the feedback button at the bottom of the website";
-
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.onclick=()=>{
-    document.querySelectorAll('.tab,.section').forEach(e=>e.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(tab.dataset.tab).classList.add('active');
-  };
-});
-
-document.getElementById('toggleTheme').onclick=()=>document.body.classList.toggle('light');
+"🔥 NEW 10k Egg is LIVE! 1/5M HEAVENLY SKULL inside 👀";
 
 const eggsData={
 "Basic":[{name:"Dragon",chance:100},{name:"Royal Blob",chance:100000}],
@@ -139,10 +129,25 @@ const eggsData={
 "Blossom":[{name:"Blossom Dominus",chance:1000},{name:"Flower Trophy",chance:100000},{name:"Eternal Flower",chance:500000}],
 "Magic":[{name:"Clown",chance:25000}],
 "Fire Ring":[{name:"Festival Bunny",chance:100},{name:"Festival Dragon",chance:1000},{name:"Fire Ring Lion",chance:100000},{name:"Ultra Dice",chance:500000}],
-"Jester":[{name:"Pink Cotton Candy",chance:100},{name:"Blue Cotton Candy",chance:1000},{name:"Popcorn",chance:250000},{name:"Flying Jester",chance:1000000}]
+"Jester":[{name:"Pink Cotton Candy",chance:100},{name:"Blue Cotton Candy",chance:1000},{name:"Popcorn",chance:250000},{name:"Flying Jester",chance:1000000}],
+"10k Egg":[
+{name:"10k Bunny",chance:100},
+{name:"10k Trophy",chance:250000},
+{name:"10k Void Bomb",chance:1000000},
+{name:"10k Heavenly Skull",chance:5000000}
+]
 };
 
-[document.getElementById('eggSelect'),document.getElementById('simEggSelect')].forEach(sel=>{
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab,.section').forEach(e=>e.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  };
+});
+document.getElementById('toggleTheme').onclick=()=>document.body.classList.toggle('light');
+
+[eggSelect,simEggSelect].forEach(sel=>{
   Object.keys(eggsData).forEach(e=>{
     let o=document.createElement('option'); o.value=e; o.textContent=e; sel.appendChild(o);
   });
@@ -160,93 +165,38 @@ function parseRarity(input){
 }
 function parseMulti(v){if(!v)return 1;v=v.toLowerCase().replace('x','');let n=parseFloat(v);return(!n||n<=0)?1:n;}
 
-// SINGLE
-document.getElementById('calcBtn').onclick = ()=>{
-  const baseInput = document.getElementById('baseRarity').value;
-  const yourLuckVal = Number(document.getElementById('yourLuck').value) || 1;
-  const eventLuckVal = Number(document.getElementById('eventLuck').value) || 1;
-  const adminLuckVal = Number(document.getElementById('adminLuck').value) || 1;
-  const eggsVal = Number(document.getElementById('eggsBatch').value);
-  const speedVal = Number(document.getElementById('hatchSpeed').value) || 2.57;
-  const speedMultiplier = parseMulti(document.getElementById('speedMulti').value);
-  const out = document.getElementById('output');
-
-  const base = parseRarity(baseInput);
-  if(!base || !eggsVal){ out.textContent="Enter valid Base Rarity & Eggs per Batch"; return; }
-
-  const luck = yourLuckVal * eventLuckVal * adminLuckVal;
-  const odds = base / luck;
-  const batches = odds / eggsVal;
-  const totalSec = batches * (speedVal / speedMultiplier);
-
-  let display;
-  if(totalSec<60) display = totalSec.toFixed(2)+' sec';
-  else if(totalSec<3600) display = (totalSec/60).toFixed(2)+' min';
-  else if(totalSec<86400) display = (totalSec/3600).toFixed(2)+' hrs';
-  else display = (totalSec/86400).toFixed(2)+' days';
-
-  out.textContent = `Luck: ${luck.toFixed(2)}x
-Chances: 1/${Math.round(odds).toLocaleString()}
-Time: ~${display}
-Per Batch Speed: ${(speedVal / speedMultiplier).toFixed(2)} sec
-Batches Needed: ${Math.round(batches).toLocaleString()}`;
+calcBtn.onclick=()=>{
+  const base=parseRarity(baseRarity.value);
+  const eggsVal=+eggsBatch.value;
+  if(!base||!eggsVal){output.textContent="Enter valid Base Rarity & Eggs per Batch";return;}
+  const luck=(+yourLuck.value||1)*(+eventLuck.value||1)*(+adminLuck.value||1);
+  const odds=base/luck;
+  const batches=odds/eggsVal;
+  const sec=batches*((+hatchSpeed.value||2.57)/parseMulti(speedMulti.value));
+  let t=sec<60?sec.toFixed(2)+' sec':sec<3600?(sec/60).toFixed(2)+' min':sec<86400?(sec/3600).toFixed(2)+' hrs':(sec/86400).toFixed(2)+' days';
+  output.textContent=`Luck: ${luck.toFixed(2)}x\nChances: 1/${Math.round(odds).toLocaleString()}\nTime: ~${t}`;
 };
-document.getElementById('copyBtn').onclick = ()=>{navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>alert('Copied!'));};
+copyBtn.onclick=()=>navigator.clipboard.writeText(output.textContent);
 
-// MULTI
-document.getElementById('multiCalcBtn').onclick = ()=>{
-  const egg=document.getElementById('eggSelect').value;
-  const luck=(+document.getElementById('multiYourLuck').value||1)*(+document.getElementById('multiEventLuck').value||1);
-  document.getElementById('multiOutput').textContent = eggsData[egg].map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`).join('\n');
+multiCalcBtn.onclick=()=>{
+  const egg=eggSelect.value;
+  const luck=(+multiYourLuck.value||1)*(+multiEventLuck.value||1);
+  multiOutput.textContent=eggsData[egg].map(p=>`${p.name}: 1/${Math.round(p.chance/luck).toLocaleString()}`).join('\n');
 };
-document.getElementById('multiCopyBtn').onclick = ()=>{navigator.clipboard.writeText(document.getElementById('multiOutput').textContent).then(()=>alert('Copied!'));};
+multiCopyBtn.onclick=()=>navigator.clipboard.writeText(multiOutput.textContent);
 
-// SIMULATOR
-let simRunId=0;
-document.getElementById('simBtn').onclick = async ()=>{
-  simRunId++;
-  const run=simRunId;
-  const egg=document.getElementById('simEggSelect').value;
-  const luck=(+document.getElementById('simYourLuck').value||1)*(+document.getElementById('simEventLuck').value||1)*(+document.getElementById('simAdminLuck').value||1);
-  const batches=+document.getElementById('simBatches').value||100;
-  const fast=document.getElementById('fastMode').checked;
-  const container=document.getElementById('simOutput'); container.innerHTML='';
-  const results={}; eggsData[egg].forEach(p=>results[p.name]=0);
-  const expected={}; eggsData[egg].forEach(p=>expected[p.name]=Math.round(batches/(p.chance/luck)));
-
-  const render=()=>{
-    if(run!==simRunId) return;
-    container.innerHTML='';
-    eggsData[egg].forEach(p=>{
-      const count=results[p.name];
-      const label=document.createElement('div'); label.textContent=`${p.name}: ${count} / Expected: ${expected[p.name]}`;
-      container.appendChild(label);
-      const barC=document.createElement('div'); barC.className='progress-container';
-      const bar=document.createElement('div'); bar.className='progress-bar'; bar.style.backgroundColor=p.chance<=100?'#ff5555':p.chance<=1000?'#55aaff':'#55ff55'; bar.style.width=Math.max(2,(count/batches)*100)+'%';
-      barC.appendChild(bar);
-      const expBar=document.createElement('div'); expBar.className='progress-bar expected'; expBar.style.width=Math.max(2,(expected[p.name]/batches)*100)+'%'; expBar.style.backgroundColor='#ffaa00';
-      barC.appendChild(expBar);
-      container.appendChild(barC);
-    });
-  };
-
-  if(fast){
-    for(let i=0;i<batches;i++){eggsData[egg].forEach(p=>{if(Math.random()<(1/(p.chance/luck))) results[p.name]++;});}
-    render();
-  }else{
-    for(let i=0;i<batches;i++){
-      if(run!==simRunId) return;
-      eggsData[egg].forEach(p=>{if(Math.random()<(1/(p.chance/luck))) results[p.name]++;});
-      render(); await new Promise(r=>setTimeout(r,10));
-    }
-  }
+simBtn.onclick=()=>{
+  const egg=simEggSelect.value;
+  const luck=(+simYourLuck.value||1)*(+simEventLuck.value||1)*(+simAdminLuck.value||1);
+  const batches=+simBatches.value||100;
+  const res={}; eggsData[egg].forEach(p=>res[p.name]=0);
+  for(let i=0;i<batches;i++){eggsData[egg].forEach(p=>{if(Math.random()<(1/(p.chance/luck))) res[p.name]++;});}
+  simOutput.textContent=Object.entries(res).map(([k,v])=>`${k}: ${v}`).join('\n');
 };
-document.getElementById('simCopyBtn').onclick = ()=>{navigator.clipboard.writeText(document.getElementById('simOutput').textContent).then(()=>alert('Copied!'));};
+simCopyBtn.onclick=()=>navigator.clipboard.writeText(simOutput.textContent);
 
 });
 </script>
 </body>
 </html>
-
-
 
